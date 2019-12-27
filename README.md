@@ -1,2 +1,3 @@
-#CREON.js
-##DOM manipulation JavaScript Library
+# CREON.js
+
+## DOM manipulation JavaScript Library

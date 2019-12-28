@@ -109,19 +109,36 @@ describe('Creon Tests', () => {
             ]
         },
         '.hasclass': {
-            'yes': [
-                function () {
-                    refresh();
-                    block.class('hello');
-                    return block.hasclass('hello');
-                }(), true
-            ],
-            'no': [
-                function () {
-                    refresh();
-                    return block.hasclass('donthavethis');
-                }(), false
-            ],
+            'single': {
+                'yes': [
+                    function () {
+                        refresh();
+                        block.class('hello');
+                        return true;
+                    }(), block.hasclass('hello')
+                ],
+                'no': [
+                    function () {
+                        refresh();
+                        return false;
+                    }(), block.hasclass('donthavethis')
+                ],
+            },
+            'few': {
+                'yes': [
+                    function () {
+                        refresh();
+                        block.class('few-hello1', 'few-hello2', 'few-hello3');
+                        return true;
+                    }(), block.hasclass('few-hello1', 'few-hello2', 'few-hello3')
+                ],
+                'haven\'t one from list': [
+                    function () {
+                        refresh();
+                        return false;
+                    }(), block.hasclass('hello', 'donthavethis', 'few-hello1')
+                ],
+            }
         },
         '.attr': {
             'get': [
@@ -137,7 +154,23 @@ describe('Creon Tests', () => {
                     block.attr('attr1', 'val1');
                     return block.getAttribute('attr1');
                 }(), 'val1'
-            ]
+            ],
+            'autocomplete': {
+                'get': [
+                    function () {
+                        refresh();
+                        block.setAttribute('attr2', 'val2');
+                        return 'val2';
+                    }(), block.attr.attr2()
+                ],
+                'set': [
+                    function () {
+                        refresh();
+                        block.attr.attr3('val3');
+                        return 'val3';
+                    }(), block.getAttribute('attr3')
+                ],
+            },
         },
         '.textto': {
             'Hello, World!': [
@@ -303,143 +336,232 @@ describe('Creon Tests', () => {
                     }(), true
                 ]
             },
-            '.clone': {
-                'deep == true': {
-                    'no args': [
-                        function () {
-                            refresh();
-                            block.myProp = 'myProp';
-                            block.myMethod = () => 'myMethod';
-                            let clone = block.clone();
-                            return clone.myProp == 'myProp' && clone.myMethod() == 'myMethod';
-                        }(), true
-                    ],
-                    '(true)': [
-                        function () {
-                            refresh();
-                            block.myProp = 'myProp';
-                            block.myMethod = () => 'myMethod';
-                            let clone = block.clone(true);
-                            return clone.myProp == 'myProp' && clone.myMethod() == 'myMethod';
-                        }(), true
-                    ]
-                },
-                'deep == false': {
-                    '(false)': [
-                        function () {
-                            refresh();
-                            block.myProp = 'myProp';
-                            block.myMethod = () => 'myMethod';
-                            let clone = block.clone(false);
-                            return !clone.myProp && !clone.myMethod &&
-                                Object.isEquivalent(clone, block.cloneNode(true));
-                        }(), true
-                    ]
-                },
-            },
-            '.lettering': {
-                'isOK': [
+        },
+        '.clone': {
+            'deep == true': {
+                'no args': [
                     function () {
                         refresh();
-                        let text = block.push.span().textto('feo');
-                        text.lettering();
-                        return text.children[0].textContent == 'f' &&
-                            text.children[1].textContent == 'e' &&
-                            text.children[2].textContent == 'o';
+                        block.myProp = 'myProp';
+                        block.myMethod = () => 'myMethod';
+                        let clone = block.clone();
+                        return clone.myProp == 'myProp' && clone.myMethod() == 'myMethod';
+                    }(), true
+                ],
+                '(true)': [
+                    function () {
+                        refresh();
+                        block.myProp = 'myProp';
+                        block.myMethod = () => 'myMethod';
+                        let clone = block.clone(true);
+                        return clone.myProp == 'myProp' && clone.myMethod() == 'myMethod';
                     }(), true
                 ]
             },
-            '.select': {
-                'sel': [
-                    function () {
-                        return sel('#block');
-                    }(), block
-                ],
-                'select': [
-                    function () {
-                        return select('#block');
-                    }(), block
-                ],
-            },
-            '.selectAll': {
-                'sela': [
+            'deep == false': {
+                '(false)': [
                     function () {
                         refresh();
-                        let lettering = block.lastchild().sela('span > span');
-                        let qsa = block.lastchild().querySelectorAll('span > span');
-                        return Array.isEquivalent(lettering, qsa);
+                        block.myProp = 'myProp';
+                        block.myMethod = () => 'myMethod';
+                        let clone = block.clone(false);
+                        return !clone.myProp && !clone.myMethod &&
+                            Object.isEquivalent(clone, block.cloneNode(true));
                     }(), true
-                ],
-                'selectAll': [
-                    function () {
-                        refresh();
-                        let lettering = block.lastchild().selectAll('span > span');
-                        let qsa = block.lastchild().querySelectorAll('span > span');
-                        return Array.isEquivalent(lettering, qsa);
-                    }(), true
-                ],
+                ]
             },
-            '.on': {
-                'isOK': [
-                    function () {
-                        refresh();
-                        block.on('click', e => block.clicked = 'isOK');
-                        block.dispatchEvent(new Event('click'));
-                        return 'isOK';
-                    }(), block.clicked
-                ],
-                'autocomplete': [
-                    function () {
-                        refresh();
-                        block.on.click(e => e.target.isOnAutocomplete = 'OK');
-                        block.dispatchEvent(new Event('click'));
-                        return 'OK';
-                    }(), block.isOnAutocomplete
-                ],
-                'eventsStore': [
-                    function () {
-                        refresh();
-                        block.on('click', e => block.isEventStore = 'eventstore');
-                        return block.events.click[2].toString();
-                    }(), "e => block.isEventStore = 'eventstore'"
-                ],
-            },
-            'range(...)': {
-                'range(stop)': [
+        },
+        '.lettering': {
+            'isOK': [
+                function () {
+                    refresh();
+                    let text = block.push.span().textto('feo');
+                    text.lettering();
+                    return text.children[0].textContent == 'f' &&
+                        text.children[1].textContent == 'e' &&
+                        text.children[2].textContent == 'o';
+                }(), true
+            ]
+        },
+        '.select': {
+            'sel': [
+                function () {
+                    return sel('#block');
+                }(), block
+            ],
+            'select': [
+                function () {
+                    return select('#block');
+                }(), block
+            ],
+        },
+        '.selectAll': {
+            'sela': [
+                function () {
+                    refresh();
+                    let lettering = block.lastchild().sela('span > span');
+                    let qsa = block.lastchild().querySelectorAll('span > span');
+                    return Array.isEquivalent(lettering, qsa);
+                }(), true
+            ],
+            'selectAll': [
+                function () {
+                    refresh();
+                    let lettering = block.lastchild().selectAll('span > span');
+                    let qsa = block.lastchild().querySelectorAll('span > span');
+                    return Array.isEquivalent(lettering, qsa);
+                }(), true
+            ],
+        },
+        '.on': {
+            'isOK': [
+                function () {
+                    refresh();
+                    block.on('click', e => block.clicked = 'isOK');
+                    block.dispatchEvent(new Event('click'));
+                    return 'isOK';
+                }(), block.clicked
+            ],
+            'autocomplete': [
+                function () {
+                    refresh();
+                    block.on.click(e => e.target.isOnAutocomplete = 'OK');
+                    block.dispatchEvent(new Event('click'));
+                    return 'OK';
+                }(), block.isOnAutocomplete
+            ],
+            'eventsStore': [
+                function () {
+                    refresh();
+                    block.on('click', e => block.isEventStore = 'eventstore');
+                    return block.events.click[2].toString();
+                }(), "e => block.isEventStore = 'eventstore'"
+            ],
+        },
+        '.config': {
+            'js props': [
+                function () {
+                    refresh();
+                    block.config({
+                        style: 'border: 1px solid red',
+                        dataset: {
+                            attrFromConfig: 'config is cool',
+                        },
+                        myObject: creon.sacred({
+                            myProp1: 'myVal1',
+                        }),
+                    });
+
+                    let expected = [
+                        'border: 1px solid red;',
+                        'config is cool',
+                        'myVal1'
+                    ], result = [
+                        block.style.cssText,
+                        block.attr('data-attr-from-config'),
+                        block.myObject.myProp1
+                    ];
+
+                    console.log();
+
+                    return Array.isEquivalent(expected, result);
+                }(), true
+            ],
+            'creon.run with creon methods (class: creon.run(class1, class2))': [
+                function () {
+                    refresh();
+                    block.config({
+                        htmlto: creon.run('<em>new inner html</em>'),
+                        on: creon.run('click', () => 'on from config >> creon methods'),
+                        attr: creon.run('attr-from-config-creon-methods', 'hohoho'),
+                        class: creon.run('conf-class1', 'conf-class2', 'conf-class3'),
+                        myObject: creon.sacred({
+                            myProp1: 'myVal1',
+                        }),
+                    });
+
+                    let expected = [
+                        '<em>new inner html</em>',
+                        "() => 'on from config >> creon methods'",
+                        'hohoho',
+                        true,
+                        'myVal1'
+                    ], result = [
+                        block.innerHTML,
+                        Array.from(block.events.click).pop(),
+                        block.attr('attr-from-config-creon-methods'),
+                        block.hasclass('conf-class1', 'conf-class2', 'conf-class3'),
+                        block.myObject.myProp1
+                    ];
+
+                    console.log();
+
+                    return Array.isEquivalent(expected, result);
+                }(), true
+            ],
+            'is creon method and value is arguments array (class: [class1, class2])': [
+                function () {
+                    refresh();
+                    block.config({
+                        htmlto: ['<em>new inner html</em>'],
+                        on: ['click', () => 'on from config >> creon methods'],
+                        attr: ['attr-from-config-creon-methods', 'hohoho'],
+                        class: ['conf-class1', 'conf-class2', 'conf-class3'],
+                    });
+
+                    let expected = [
+                        '<em>new inner html</em>',
+                        "() => 'on from config >> creon methods'",
+                        'hohoho',
+                        true,
+                    ], result = [
+                        block.innerHTML,
+                        Array.from(block.events.click).pop(),
+                        block.attr('attr-from-config-creon-methods'),
+                        block.hasclass('conf-class1', 'conf-class2', 'conf-class3'),
+                    ];
+
+                    console.log();
+
+                    return Array.isEquivalent(expected, result);
+                }(), true
+            ]
+        },
+        'range(...)': {
+            'range(stop)': [
+                function () {
+                    let arr = [];
+                    for (let i of range(3)) arr.push(i);
+                    return arr[0] == 0 && arr[1] == 1 && arr[2] == 2 && arr[3] == undefined;
+                }(), true
+            ],
+            'range(start, stop)': [
+                function () {
+                    let arr = [];
+                    for (let i of range(1, 4)) arr.push(i);
+                    return arr[0] == 1 && arr[1] == 2 && arr[2] == 3 && arr[3] == undefined;
+                }(), true
+            ],
+            'range(start, stop, step)': {
+                'correct step': [
                     function () {
                         let arr = [];
-                        for (let i of range(3)) arr.push(i);
-                        return arr[0] == 0 && arr[1] == 1 && arr[2] == 2 && arr[3] == undefined;
+                        for (let i of range(1, 6, 2)) arr.push(i);
+                        return arr[0] == 1 && arr[1] == 3 && arr[2] == 5 && arr[3] == undefined;
                     }(), true
                 ],
-                'range(start, stop)': [
+                'uncorrect step': [
                     function () {
                         let arr = [];
-                        for (let i of range(1, 4)) arr.push(i);
-                        return arr[0] == 1 && arr[1] == 2 && arr[2] == 3 && arr[3] == undefined;
+                        for (let i of range(1, 6, 2)) arr.push(i);
+                        console.log(arr);
+                        return arr[0] == 1 && arr[1] == 3 && arr[2] == 5 && arr[3] == undefined;
                     }(), true
-                ],
-                'range(start, stop, step)': {
-                    'correct step': [
-                        function () {
-                            let arr = [];
-                            for (let i of range(1, 6, 2)) arr.push(i);
-                            return arr[0] == 1 && arr[1] == 3 && arr[2] == 5 && arr[3] == undefined;
-                        }(), true
-                    ],
-                    'uncorrect step': [
-                        function () {
-                            let arr = [];
-                            for (let i of range(1, 6, 2)) arr.push(i);
-                            console.log(arr);
-                            return arr[0] == 1 && arr[1] == 3 && arr[2] == 5 && arr[3] == undefined;
-                        }(), true
-                    ]
-                },
+                ]
             },
-            'keycode': {
-                'isOK': [!!keycode, true],
-            }
+        },
+        'keycode': {
+            'isOK': [!!keycode, true],
         },
 
         all() {

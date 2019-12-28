@@ -32,6 +32,7 @@ function select(selector, parent = undefined) { //, classes, parent, id, name
             { context: elem, prop: 'push' },
             { context: elem.insert, props: ['before', 'after'] },
             { context: elem, prop: 'on' },
+            { context: elem, prop: 'attr' },
         ]
             .forEach(obj => {
                 if (obj.prop)
@@ -160,6 +161,18 @@ let sela = selectAll;
 let cre = create;
 
 const creon = {
+    run(...args) {
+        return {
+            _isCreonRunner: true,
+            args: args,
+        };
+    },
+    sacred(data) {
+        return {
+            _isCreonDontTouch: true,
+            data: data,
+        };
+    },
     allTags: [
         "area", "base", "br", "col", "embed", "hr", "img", "input", "link", "menuitem", "meta", "param", "source", "track", "wbr", "script", "style", "textarea", "title", "a", "abbr", "address", "area", "map", "article", "aside", "audio", "b", "base", "bdi", "bdo", "blockquote", "body", "br", "button", "canvas", "caption", "table", "cite", "code", "col", "colgroup", "data", "datalist", "input", "option", "dd", "dt", "del", "details", "summary", "dfn", "dialog", "div", "dl", "dt", "em", "embed", "fieldset", "figcaption", "figure", "figure", "footer", "form", "h1-h6", "head", "title", "meta", "script", "link", "style", "header", "hr", "html", "i", "iframe", "img", "input", "ins", "kbd", "label", "input", "legend", "fieldset", "li", "link", "main", "main", "map", "area", "mark", "meta", "head", "meta", "meter", "nav", "noscript", "object", "param", "ol", "optgroup", "option", "option", "select", "optgroup", "datalist", "output", "p", "param", "object", "picture", "img", "source", "pre", "progress", "q", "ruby", "rb", "rt", "ruby", "rtc", "rp", "s", "samp", "script", "section", "select", "option", "small", "source", "picture", "video", "audio", "span", "strong", "style", "sub", "summary", "details", "sup", "table", "tbody", "td", "template", "textarea", "tfoot", "th", "thead", "time", "title", "tr", "track", "audio", "video", "u", "ul", "var", "video", "wbr"
     ],
@@ -207,8 +220,11 @@ const creon = {
             return this;
         },
 
-        hasclass(className) {
-            return this.classList.contains(className);
+        hasclass(...classes) {
+            for (let i = 0; i < classes.length; i++) {
+                if (!this.classList.contains(classes[i])) return false;
+            }
+            return true;
         },
 
         attr(attribute, value) {
@@ -453,6 +469,28 @@ const creon = {
         //     this.on("change", handler);
         //     return this;
         // };
+
+        config(configObject) {
+            for (const prop in configObject) {
+                if (configObject.hasOwnProperty(prop)) {
+                    const value = configObject[prop];
+                    if (value._isCreonRunner) {
+                        this[prop](...value.args);
+                    } else if (value._isCreonDontTouch) {
+                        this[prop] = value.data;
+                    } else if (typeof value == "object" && Object.getPrototypeOf(value).constructor.name == "Object") {
+                        //is object need to be proccessed
+                        //e.g. dataset: { attr1: val1, attr2: val2 }
+                        const point = this[prop];
+                        Object.assign(point, value);
+                    } else if (typeof value == "object" && Object.getPrototypeOf(value).constructor.name == "Array" && Object.keys(creon.frame).find(val => val == prop)) {
+                        this[prop](...value);
+                    } else
+                        this[prop] = value;
+                }
+            }
+            return this;
+        }
     },
 };
 

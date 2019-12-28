@@ -1,19 +1,25 @@
 function select(selector, parent = undefined) { //, classes, parent, id, name
 
-    function frame(elem) {
+    function frame(elem) { //stop: frame function
+
+        if (elem.backup && elem.events && elem.config && elem.insert && elem.push && elem.class) return;
+
+        elem._creoned = true;
+
         Object.assign(elem, { ...creon.frame });
         elem.insert = Object.assign({}, creon.frame.insert);
+        elem.events = Object.assign({}, creon.frame.events);
         function autocomplete(context, contextProp) {
             context[contextProp] = new Proxy(context[contextProp], {
                 get(target, prop, reciever) {
-                    if (prop) {
-                        target[prop] = function () { };
-                        return new Proxy(target[prop], {
-                            apply(autoTarget, autoTargetThisArg, autoTargetArgs) {
+                    target[prop] = function () { };
+                    return new Proxy(target[prop], {
+                        apply(autoTarget, autoTargetThisArg, autoTargetArgs) {
+                            if (autoTarget.toString() == 'function () { }')
                                 return target.call(elem, prop, ...autoTargetArgs);
-                            }
-                        });
-                    }
+                            else return autoTarget(autoTargetArgs);
+                        },
+                    });
                 },
                 apply(target, thisArg, args) {
                     return target.call(elem, ...args);
@@ -28,6 +34,7 @@ function select(selector, parent = undefined) { //, classes, parent, id, name
             return elem;
         };
 
+        //OKEY: autotargeting only after all methods assigning
         [
             { context: elem, prop: 'push' },
             { context: elem.insert, props: ['before', 'after'] },
@@ -35,24 +42,10 @@ function select(selector, parent = undefined) { //, classes, parent, id, name
             { context: elem, prop: 'attr' },
         ]
             .forEach(obj => {
-                if (obj.prop)
-                    autocomplete(obj.context, obj.prop);
-                else
-                    obj.props.forEach(prop => autocomplete(obj.context, prop));
+                obj.prop
+                    ? autocomplete(obj.context, obj.prop)
+                    : obj.props.forEach(prop => autocomplete(obj.context, prop));
             });
-
-        elem.lastchild = new Proxy(elem.lastchild, {
-            get(target) {
-                return target();
-            },
-            set(target, prop, value) {
-                target(value);
-                return value;
-            },
-            apply(target, thisArg, args) {
-                return target.call(elem, ...args);
-            }
-        });
     }
 
 
@@ -160,7 +153,7 @@ let sel = select;
 let sela = selectAll;
 let cre = create;
 
-const creon = {
+const creon = { //stop: creon start
     run(...args) {
         return {
             _isCreonRunner: true,
@@ -176,7 +169,66 @@ const creon = {
     allTags: [
         "area", "base", "br", "col", "embed", "hr", "img", "input", "link", "menuitem", "meta", "param", "source", "track", "wbr", "script", "style", "textarea", "title", "a", "abbr", "address", "area", "map", "article", "aside", "audio", "b", "base", "bdi", "bdo", "blockquote", "body", "br", "button", "canvas", "caption", "table", "cite", "code", "col", "colgroup", "data", "datalist", "input", "option", "dd", "dt", "del", "details", "summary", "dfn", "dialog", "div", "dl", "dt", "em", "embed", "fieldset", "figcaption", "figure", "figure", "footer", "form", "h1-h6", "head", "title", "meta", "script", "link", "style", "header", "hr", "html", "i", "iframe", "img", "input", "ins", "kbd", "label", "input", "legend", "fieldset", "li", "link", "main", "main", "map", "area", "mark", "meta", "head", "meta", "meter", "nav", "noscript", "object", "param", "ol", "optgroup", "option", "option", "select", "optgroup", "datalist", "output", "p", "param", "object", "picture", "img", "source", "pre", "progress", "q", "ruby", "rb", "rt", "ruby", "rtc", "rp", "s", "samp", "script", "section", "select", "option", "small", "source", "picture", "video", "audio", "span", "strong", "style", "sub", "summary", "details", "sup", "table", "tbody", "td", "template", "textarea", "tfoot", "th", "thead", "time", "title", "tr", "track", "audio", "video", "u", "ul", "var", "video", "wbr"
     ],
-    frame: {
+    onspecial: { //stop: onspecial
+        hover(hoverin, hoverout = 'tag', name = "") {
+            if (typeof hoverout == "function") { //is function
+                this.on("mouseenter", hoverin, name).on("mouseleave", hoverout, name);
+            }
+            else {
+                let backup = null;
+                const mode = hoverout;
+                this.on("mouseenter", e => {
+                    backup = this.backup(mode);
+                    hoverin(e);
+                }, name);
+                this.on("mouseleave", e => {
+                    this.config(backup);
+                }, name);
+            }
+            return this;
+        },
+
+        clickToggle(clickin, clickout) {
+            let isClickedIn = false;
+            this.on('click', e => {
+                e.isClickedIn = isClickedIn;
+                if (!isClickedIn) {
+                    if (!clickout) {
+                        //make backup of element
+                    }
+                    clickin(e);
+                } else {
+                    if (!clickout) {
+                        //restore element from backup
+                    } else {
+                        clickout(e);
+                    }
+                }
+            });
+            return elem;
+        },
+
+        focus(focusin, focusout, name = '') {
+            this.on('focusin', e => {
+                if (!focusout) {
+                    //make backup
+                }
+                focusin(e);
+            });
+            this.on('focusout', e => {
+                if (!focusout) {
+                    //restore from backup
+                } else {
+                    focusout(e);
+                }
+            });
+        },
+    },
+    backup: { //stop: backup modes
+        tag: ['tagName', 'className', 'style.cssText'],
+        tagFull: ['tagName', 'attributes'],
+    },
+    frame: { //stop: frame start
         destruct(to) {
             let toCopy = JSON.parse(JSON.stringify(to));
             to = this;
@@ -369,14 +421,36 @@ const creon = {
         sela: this.selectAll,
 
 
-        events: {},
+        events: {
+        },
 
-        on(eventTypes, handler, name = "") {
+        on(eventTypes, handler, name = "") { //stop: .on
             let elem = this;
             let eventTypesArray = eventTypes.split(" ");
 
+            if (!elem.events.remove) {
+                elem.events.remove = function () {
+                    for (let child in this) {
+                        this[child].remove();
+                    }
+                };
+                //make enumerable
+                Object.defineProperty(elem.events, 'remove', { enumerable: false });
+            }
+
             for (let i = 0; i < eventTypesArray.length; i++) {
                 let eName = eventTypesArray[i].trim(); //eventName
+
+                if (creon.onspecial[eName]) {
+                    //if is special (e.g. hover) then call this special function
+                    //inside some proccesing and call to necessary event types
+                    //e.g. hover >> mouseenter, mouseleave
+                    let args = Array.from(arguments);
+                    args.shift();
+                    creon.onspecial[eName].call(this, ...args);
+                    return this;
+                }
+
                 this.addEventListener(eName, handler);
                 if (!this.events[eName]) {
                     //add this type of event to events array
@@ -384,10 +458,10 @@ const creon = {
 
                     //add removeEventListener of type shortcut
                     this.events[eName].remove = function () {
-                        for (let child in this.events[eName]) {
-                            this.events[eName][child].remove();
+                        for (let child in elem.events[eName]) {
+                            elem.events[eName][child].remove();
                         }
-                        delete this.events[eName];
+                        delete elem.events[eName];
                     };
 
                     //make remove method enumerable
@@ -410,6 +484,7 @@ const creon = {
 
                     //removeEventListener shortcut
                     currEvent.remove = () => {
+                        delete this.events[eName].splice(index, 1);
                         elem.removeEventListener(currEvent.eventtype.name, currEvent);
                     };
 
@@ -428,6 +503,7 @@ const creon = {
 
                     //removeEventListener shortcut
                     currEvent.remove = () => {
+                        this.events[eName].splice(index, 1);
                         elem.removeEventListener(currEvent.eventtype.name, currEvent);
                     };
                 }
@@ -437,62 +513,171 @@ const creon = {
             return this;
         },
 
-        //TODO: make on.hover, ...,  as new Proxy(target, handler) for any prop
-        // this.on.hover = function (hoverin, hoverout, name = "") {
-        //     if (hoverout) {
-        //         this.on("mouseenter", hoverin, name).on("mouseleave", hoverout, name);
-        //     }
-        //     else {
-        //         this.on("mouseenter", e => {
-        //             if (!this.on.hover.stylesBefore)
-        //                 this.on.hover.stylesBefore = this.style.cssText;
-        //             hoverin(e);
-        //         }, name);
-        //         this.on("mouseleave", e => {
-        //             if (this.on.hover.stylesBefore) {
-        //                 this.style.cssText = this.on.hover.stylesBefore;
-        //                 delete this.on.hover.stylesBefore;
-        //             }
-        //         }, name);
-        //     }
-        //     return this;
-        // };
-        // this.on.click = function (handler) {
-        //     this.on("click", handler);
-        //     return this;
-        // };
-        // this.on.focus = function (focusin, focusout) {
-        //     this.on("focusin", focusin).on("focusout", focusout);
-        //     return this;
-        // };
-        // this.on.change = function (handler) {
-        //     this.on("change", handler);
-        //     return this;
-        // };
+        config(configObject) { //stop: config
+            function configSingle(elem, prop, value) {
+                if (value._isCreonRunner) {
+                    elem[prop](...value.args);
+                } else if (value._isCreonDontTouch) {
+                    elem[prop] = value.data;
+                } else if (typeof value == "object" && Object.getPrototypeOf(value).constructor.name == "Object") {
+                    //is object need to be proccessed
+                    //e.g. dataset: { attr1: val1, attr2: val2 }
+                    const point = elem[prop];
+                    Object.assign(point, value);
+                } else if (Array.isArray(value) && Object.keys(creon.frame).find(val => val == prop)) {
+                    elem[prop](...value);
+                } else
+                    elem[prop] = value;
+            }
 
-        config(configObject) {
             for (const prop in configObject) {
                 if (configObject.hasOwnProperty(prop)) {
                     const value = configObject[prop];
-                    if (value._isCreonRunner) {
-                        this[prop](...value.args);
-                    } else if (value._isCreonDontTouch) {
-                        this[prop] = value.data;
-                    } else if (typeof value == "object" && Object.getPrototypeOf(value).constructor.name == "Object") {
-                        //is object need to be proccessed
-                        //e.g. dataset: { attr1: val1, attr2: val2 }
-                        const point = this[prop];
-                        Object.assign(point, value);
-                    } else if (typeof value == "object" && Object.getPrototypeOf(value).constructor.name == "Array" && Object.keys(creon.frame).find(val => val == prop)) {
-                        this[prop](...value);
-                    } else
-                        this[prop] = value;
+
+                    //[DATA]
+                    //this == elem
+                    //configObject: {
+                    //    ...
+                    //    prop: value
+                    //    ...
+                    //}
+
+                    if (prop == "style") {
+                        if (typeof value == "string") {
+                            this.style = value;
+                        } else {
+                            this.style.few(value);
+                        }
+                    }
+                    else if (prop == "attributes") {
+                        for (let attr in value) {
+                            this.attr(attr, value[attr]);
+                        }
+                    } else if (prop == "on") { //TEST!
+                        function proccessArray(elem, value, type) {
+                            let eachElementIsArray = true;
+                            for (let i = 0; i < value.length; i++) {
+                                if (!Array.isArray(value[i])) {
+                                    eachElementIsArray = false;
+                                    break;
+                                }
+                            }
+                            if (eachElementIsArray) {
+                                // args in arr in arr, e.g.
+                                // on: [
+                                //     ['hover', e => ..., e => ...],
+                                //     ['click', e => ...]
+                                // ]
+                                value.forEach(args => {
+                                    if (type) args.unshift(type);
+                                    elem.on(...args);
+                                });
+                            } else {
+                                if (!Array.isArray(value)) value = [value];
+                                if (type) value.unshift(type);
+                                elem.on(...value); //e.g. on: ['hover', e => ..., e => ...], //args in arr
+                            }
+                        }
+
+                        if (Array.isArray(value) && value.length > 0) { //TEST!
+                            proccessArray(this, value);
+                        } else if (typeof value == "object") { //is usual object test!
+                            if (value._isCreonDontTouch) continue;
+                            if (value._isCreonRunner) {
+                                //1.
+                                // on: [
+                                //     ['hover', e => ..., e => ...],
+                                //     ['click', e => ...]
+                                // ]
+                                //2.
+                                // on: ['hover', e => ..., e => ...],
+                                this.on(...value.args);
+                            } else {
+                                //else if usual object
+                                for (const eventType in value) {
+                                    const eventHandler = value[eventType];
+                                    if (Array.isArray(eventHandler) && eventHandler.length > 0) {
+                                        const eventHandlersArray = eventHandler;
+                                        proccessArray(this, eventHandlersArray, eventType);
+                                    }
+                                }
+                            }
+                        } else throw new Error('Extpected: Element.config({ ..., on: (Array | Object), ...}). But recieved ' + typeof value + '. Use Array or Object instead.');
+                    } else {
+                        //if (!style && !on)
+                        configSingle(this, prop, value);
+                    }
                 }
             }
             return this;
+        },
+
+        //todo: make mode:array recieve
+        backup(mode = 'tag') { //stop: backup
+            let backup = {};
+            let propsToBackup;
+
+            if (mode == 'all') {
+                propsToBackup = Object.keys(this);
+            } else {
+                propsToBackup = creon.backup[mode];
+            }
+
+            function copyObjectProp(fromContext, propName, toContext) {
+
+                function getsetMaster(obj, propName) {
+                    const propSplit = propName.split('.');
+                    propName = propSplit.pop(); //remove last and make get by hands
+                    let curr = obj;
+                    propSplit.forEach(prop => {
+                        if (!curr[prop]) curr[prop] = {}; //because not last
+                        curr = curr[prop];
+                    });
+                    return {
+                        get _() {
+                            return curr[propName];
+                        },
+                        set _(value) {
+                            return curr[propName] = value;
+                        }
+                    };
+                }
+
+                const from = getsetMaster(fromContext, propName);
+                const to = getsetMaster(toContext, propName);
+
+                if (typeof from._ == "object") {
+
+                    if (typeof from._ == "object" && Object.getPrototypeOf(from._).constructor.name == 'Object') {
+                        to._ = Object.assign({}, from._);
+                    } else { //is class instance
+                        to._ = {};
+                        for (const attrId in from._) {
+                            if (from._.hasOwnProperty(attrId) && typeof from._[attrId] == "object") {
+                                const attrFrom = getsetMaster(from._, attrId);
+
+                                //TODO: add copy methods for another classes
+                                //method for attributes
+                                if (attrFrom._.nodeName) {
+                                    const attrTo = getsetMaster(to._, attrFrom._.nodeName);
+                                    attrTo._ = attrFrom._.nodeValue;
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    to._ = from._;
+                }
+            }
+
+            propsToBackup.forEach(prop => {
+                copyObjectProp(this, prop, backup);
+            });
+            return backup;
         }
     },
 };
+
 
 function range(start, stop, step) {
     if (!stop) {

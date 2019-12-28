@@ -32,21 +32,32 @@ Array.isEquivalent = function (a, b) {
     return true;
 };
 
-describe('Creon Tests', () => {
-    let block = sel('#block');
-    let blockParent = sel('#blockParent');
-    blockParent.push('div', 10);
+let block = sel('#blockId');
+let blockParent = sel('#blockParentId');
+let blockTwo = sel('#blockTwoId');
 
-    function refresh() {
-        block = sel('#block');
-        blockParent = sel('#blockParent');
-    }
+let backups = [block.backup('tagFull'), blockParent.backup('tagFull'), blockTwo.backup('tagFull')];
+
+function refresh() {
+    [
+        block = sel('#blockId'),
+        blockParent = sel('#blockParentId'),
+        blockTwo = sel('#blockTwoId'),
+    ].forEach((el, i) => {
+        const attrs = Array.from(el.attributes).map(el => el.nodeName);
+        attrs.forEach(attr => el.removeAttribute(attr));
+        el.config(backups[i]);
+    });
+}
+
+describe('Creon Tests', () => {
+    blockParent.push('div', 10);
 
     const tests = {
         '.style.few': {
             mode: 'equal',
             'border, width, height': [
-                sel('#block').style.few({
+                sel('#blockId').style.few({
                     border: '1px solid black',
                     width: '5em',
                     height: '5em'
@@ -96,7 +107,6 @@ describe('Creon Tests', () => {
         '.unclass': {
             'signle': [
                 function () {
-                    refresh();
                     block.unclass('class1');
                     return block.className;
                 }(), 'class2 class3'
@@ -386,12 +396,12 @@ describe('Creon Tests', () => {
         '.select': {
             'sel': [
                 function () {
-                    return sel('#block');
+                    return sel('#blockId');
                 }(), block
             ],
             'select': [
                 function () {
-                    return select('#block');
+                    return select('#blockId');
                 }(), block
             ],
         },
@@ -437,6 +447,82 @@ describe('Creon Tests', () => {
                     return block.events.click[2].toString();
                 }(), "e => block.isEventStore = 'eventstore'"
             ],
+            'special events': {
+                'hover': {
+                    '() //tag': [
+                        function () {
+                            blockTwo.config({
+                                style: {
+                                    border: '1px solid skyblue',
+                                    width: '10em',
+                                    height: '10em'
+                                },
+                                on: {
+                                    hover: [
+                                        e => {
+                                            console.log('hoverin');
+                                            e.target.style.borderColor = 'red';
+                                        },
+                                    ]
+                                }
+                            });
+                            const expected = [], result = [];
+
+                            blockTwo.dispatchEvent(new Event('mouseenter'));
+                            blockTwo.offsetWidth;
+
+                            expected.push('border: 1px solid red; width: 10em; height: 10em;');
+                            result.push(blockTwo.style.cssText);
+
+                            blockTwo.offsetWidth;
+                            blockTwo.dispatchEvent(new Event('mouseleave'));
+                            blockTwo.offsetWidth;
+
+                            expected.push('border: 1px solid skyblue; width: 10em; height: 10em;');
+                            result.push(blockTwo.style.cssText);
+
+                            blockTwo.events.remove();
+
+                            return Array.isEquivalent(expected, result);
+                        }(), true
+                    ],
+                    'tagFull': [
+                        function () {
+                            blockTwo.config({
+                                style: {
+                                    border: '1px solid skyblue',
+                                    width: '10em',
+                                    height: '10em'
+                                },
+                                on: {
+                                    hover: [
+                                        e => {
+                                            console.log('hoverin');
+                                            e.target.style.borderColor = 'red';
+                                        }, 'tagFull'
+                                    ]
+                                }
+                            });
+                            const expected = [], result = [];
+
+                            blockTwo.dispatchEvent(new Event('mouseenter'));
+                            blockTwo.offsetWidth;
+
+                            expected.push('border: 1px solid red; width: 10em; height: 10em;');
+                            result.push(blockTwo.style.cssText);
+
+                            blockTwo.offsetWidth;
+                            blockTwo.dispatchEvent(new Event('mouseleave'));
+                            blockTwo.offsetWidth;
+
+                            expected.push('border: 1px solid skyblue; width: 10em; height: 10em;');
+                            result.push(blockTwo.style.cssText);
+
+                            return Array.isEquivalent(expected, result);
+                        }(), true
+                    ],
+                }
+            }
         },
         '.config': {
             'js props': [
@@ -525,7 +611,95 @@ describe('Creon Tests', () => {
 
                     return Array.isEquivalent(expected, result);
                 }(), true
+            ],
+            'style object': [
+                function () {
+                    refresh();
+                    block.config({
+                        style: {
+                            color: 'green',
+                            border: '1px solid pink',
+                            borderRadius: '1em',
+                        },
+                    });
+                    console.log(block.style.cssText);
+                    return 'color: green; border: 1px solid pink; border-radius: 1em;';
+                }(), block.style.cssText
+            ],
+            'usual object': [
+                function () {
+                    refresh();
+                    block.config({
+                        myObject: {
+                            myProp: 'myVal',
+                            myMethod: () => 'myValMethod'
+                        }
+                    });
+                    const expected = [
+                        'myVal',
+                        'myValMethod'
+                    ], result = [
+                        block.myObject.myProp,
+                        block.myObject.myMethod()
+                    ];
+                    return Array.isEquivalent(expected, result);
+                }(), true
+            ],
+            'js property': [
+                function () {
+                    refresh();
+                    let ihtml = block.innerHTML;
+                    block.innerHTML = '';
+                    block.config({
+                        textContent: 'new text'
+                    });
+                    const res = block.textContent == 'new text';
+                    block.htmlto(ihtml);
+                    return res;
+                }(), true
             ]
+        },
+        '.backup': {
+            'tagFull': [
+                function () {
+                    refresh();
+                    block.config({
+                        style: 'border: 1px solid red',
+                        class: ['hello', 'few-hello1', 'few-hello2', 'few-hello3', 'conf-class1', 'conf-class2', 'conf-class3'],
+                        attributes: {
+                            attr0: 'val0',
+                            attr1: 'val1',
+                            attr2: 'val2',
+                            attr3: 'val3',
+                            'data-attr-from-config': 'config is cool',
+                            'attr-from-config-creon-methods': 'hohoho'
+                        }
+                    });
+                    let backup = block.backup('tagFull');
+                    const expected = [
+                        'blockId',
+                        'border: 1px solid red;',
+                        'hello few-hello1 few-hello2 few-hello3 conf-class1 conf-class2 conf-class3',
+                        'val0',
+                        'val1',
+                        'val2',
+                        'val3',
+                        'config is cool',
+                        'hohoho'
+                    ], result = [
+                        backup.attributes.id,
+                        backup.attributes.style,
+                        backup.attributes.class,
+                        backup.attributes.attr0,
+                        backup.attributes.attr1,
+                        backup.attributes.attr2,
+                        backup.attributes.attr3,
+                        backup.attributes['data-attr-from-config'],
+                        backup.attributes['attr-from-config-creon-methods'],
+                    ];
+                    return Array.isEquivalent(expected, result);
+                }(), true
+            ],
         },
         'range(...)': {
             'range(stop)': [
@@ -588,3 +762,4 @@ describe('Creon Tests', () => {
 
     tests.all();
 });
+

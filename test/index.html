@@ -26,8 +26,9 @@
 
 <body>
 
-    <div id="block"></div>
-    <div id="blockParent"></div>
+    <div id="blockId"></div>
+    <div id="blockParentId"></div>
+    <div id="blockTwoId"></div>
 
     <script src="../src/creon.js"></script>
     <script src="./test.js"></script>
@@ -37,6 +38,7 @@
     <!-- Запускаем тесты -->
     <script>
         mocha.run();
+        setTimeout(() => console.log(window.backup), 1000);
     </script>
 </body>
 

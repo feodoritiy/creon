@@ -1,24 +1,57 @@
 function select(selector, parent = undefined) { //, classes, parent, id, name
-    function tagAutocomplete(elem, propertyWay) { //propertyWay => "prop1/prop2/prop3/.../propLast"
-        let allTags = creon.allTags;
-        let properties = propertyWay.split("/");
-        let currentPosition = elem;
-        properties.forEach(prop => {
-            currentPosition = currentPosition[prop];
-        });
-        for (let i = 0, tagName; tagName = allTags[i]; i++) {
-            currentPosition[tagName] = className => className ? currentPosition(tagName).class(className) : currentPosition(tagName);
-        }
-    }
 
     function frame(elem) {
-        Object.assign(elem, creon.frame);
+        Object.assign(elem, { ...creon.frame });
+        elem.insert = Object.assign({}, creon.frame.insert);
+        function autocomplete(context, contextProp) {
+            context[contextProp] = new Proxy(context[contextProp], {
+                get(target, prop, reciever) {
+                    if (prop) {
+                        target[prop] = function () { };
+                        return new Proxy(target[prop], {
+                            apply(autoTarget, autoTargetThisArg, autoTargetArgs) {
+                                return target.call(elem, prop, ...autoTargetArgs);
+                            }
+                        });
+                    }
+                },
+                apply(target, thisArg, args) {
+                    return target.call(elem, ...args);
+                }
+            });
+        }
+
         elem.style.few = function (fewStylesObject) {
             for (let prop in fewStylesObject) {
                 elem.style[prop] = fewStylesObject[prop];
             }
             return elem;
         };
+
+        [
+            { context: elem, prop: 'push' },
+            { context: elem.insert, props: ['before', 'after'] },
+            { context: elem, prop: 'on' },
+        ]
+            .forEach(obj => {
+                if (obj.prop)
+                    autocomplete(obj.context, obj.prop);
+                else
+                    obj.props.forEach(prop => autocomplete(obj.context, prop));
+            });
+
+        elem.lastchild = new Proxy(elem.lastchild, {
+            get(target) {
+                return target();
+            },
+            set(target, prop, value) {
+                target(value);
+                return value;
+            },
+            apply(target, thisArg, args) {
+                return target.call(elem, ...args);
+            }
+        });
     }
 
 
@@ -211,7 +244,7 @@ const creon = {
                 currentParent = currentParent.parentElement;
             }
             let parent = currentParent;
-            frame(parent);
+            sel(parent);
             return parent;
         },
 
@@ -223,7 +256,7 @@ const creon = {
                 currentNextElement = currentNextElement.nextElementSibling;
             }
             if (currentNextElement)
-                frame(currentNextElement);
+                sel(currentNextElement);
             return currentNextElement;
         },
 
@@ -235,24 +268,27 @@ const creon = {
                 currentPrevElement = currentPrevElement.previousElementSibling;
             }
             if (currentPrevElement)
-                frame(currentPrevElement);
+                sel(currentPrevElement);
             return currentPrevElement;
         },
 
-        get firstchild() {
-            return sel(this.firstElementChild);
-        },
-        set firstchild(node) {
-            return sel(this.prepend(node));
-        },
-
-        get lastchild() {
-            return sel(this.lastElementChild);
-        },
-        set lastchild(node) {
-            return sel(this.append(node));
+        firstchild(node) {
+            if (node) {
+                this.prepend(node);
+                return sel(node);
+            } else {
+                return sel(this.firstElementChild);
+            }
         },
 
+        lastchild(node) {
+            if (node) {
+                this.append(node);
+                return sel(node);
+            } else {
+                return sel(this.lastElementChild);
+            };
+        },
 
         push(child, numberOfChilds) {
             const elem = this;
@@ -265,23 +301,42 @@ const creon = {
                 return create(child).to(elem);
             }
         },
-        //TODO: tagAutocomplete(elem, "push"); make with Proxy
 
         insert: {
-            //TODO: make tagAutocomplete with Proxy
             after(child) {
-                let elem = this;
-                return this.parentElement.insertBefore(create(child), elem.next());
+                let elem = sel(this);
+                return elem.parentElement.insertBefore(
+                    typeof child == "string" ? create(child) : sel(child),
+                    elem.next()
+                );
             },
             before(child) {
-                let elem = this;
-                return this.parentElement.insertBefore(create(child), elem);
+                let elem = sel(this);
+                return elem.parentElement.insertBefore(
+                    typeof child == "string" ? create(child) : sel(child),
+                    elem
+                );
             }
         },
 
 
         clone(isDeepCloning = true) {
-            return this.cloneNode(isDeepCloning);
+            if (isDeepCloning) {
+                let clone = this.cloneNode(true);
+                Object.assign(clone, this);
+                for (const prop in this) {
+                    if (clone.hasOwnProperty(prop)) {
+                        const value = this[prop];
+                        if (value instanceof Object && Object.getPrototypeOf(value) == undefined) {
+                            Object.assign(clone[prop], this[prop]);
+                        }
+                    }
+                }
+                return clone;
+            } else {
+                let clone = this.cloneNode(true);
+                return clone;
+            }
         },
 
         lettering() {
@@ -401,26 +456,78 @@ const creon = {
     },
 };
 
-function range(n) {
-    return {
-        from: 0, to: n, [Symbol.iterator]() { return this; }, next() {
-            if (this.current === undefined) {
-                this.current = this.from;
+function range(start, stop, step) {
+    if (!stop) {
+        return {
+            from: 0, to: start, [Symbol.iterator]() { return this; }, next() {
+                if (this.current === undefined) {
+                    this.current = this.from;
+                }
+                if (this.current < this.to) {
+                    return {
+                        done: false,
+                        value: this.current++
+                    };
+                } else {
+                    delete this.current;
+                    return {
+                        done: true
+                    };
+                }
             }
-            if (this.current < this.to) {
-                return {
-                    done: false,
-                    value: this.current++
-                };
-            } else {
-                delete this.current;
-                return {
-                    done: true
-                };
-            }
+        };
+    } else if (!step) {
+        if (stop < start) {
+            let temp = start;
+            start = stop;
+            stop = temp;
         }
-    };
-}
+        return {
+            from: start, to: stop, [Symbol.iterator]() { return this; }, next() {
+                if (this.current === undefined) {
+                    this.current = this.from;
+                }
+                if (this.current < this.to) {
+                    return {
+                        done: false,
+                        value: this.current++
+                    };
+                } else {
+                    delete this.current;
+                    return {
+                        done: true
+                    };
+                }
+            }
+        };
+    } else {
+        if (stop < start) {
+            let temp = start;
+            start = stop;
+            stop = temp;
+        }
+        return {
+            from: start, to: stop, [Symbol.iterator]() { return this; }, next() {
+                if (this.current === undefined) {
+                    this.current = this.from;
+                }
+                if (this.current < this.to) {
+                    let value = this.current;
+                    this.current += step;
+                    return {
+                        done: false,
+                        value: value,
+                    };
+                } else {
+                    delete this.current;
+                    return {
+                        done: true,
+                    };
+                }
+            }
+        };
+    }
+};
 
 let keycode = {
     a: 65,

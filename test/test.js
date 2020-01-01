@@ -657,6 +657,23 @@ describe('Creon Tests', () => {
                     block.htmlto(ihtml);
                     return res;
                 }(), true
+            ],
+            'propName regex': [
+                function () {
+                    refresh();
+                    block.config({
+                        texC: 'text content',
+                        cla: ['short-conf-class1', 'short-conf-class2'],
+                    });
+                    const expected = [
+                        'text content',
+                        'short-conf-class1 short-conf-class2'
+                    ], result = [
+                        block.textContent,
+                        block.className
+                    ];
+                    return Array.isEquivalent(expected, result);
+                }(), true
             ]
         },
         '.backup': {

@@ -514,6 +514,25 @@ const creon = { //stop: creon start
         },
 
         config(configObject) { //stop: config
+            function getFullPropNameByRegex(elem, propName) {
+                const regexBegin = new RegExp(`^${propName}`);
+                const regexHasAnotherParts = new RegExp(propName.split('').map(char => char + '.*?').join(''));
+
+                for (let prop in elem) {
+                    if (prop.match(regexBegin)) {
+                        return prop;
+                    }
+                }
+
+                for (let prop in elem) {
+                    if (prop.match(regexHasAnotherParts)) {
+                        return prop;
+                    }
+                }
+
+                return propName;
+            }
+
             function configSingle(elem, prop, value) {
                 if (value._isCreonRunner) {
                     elem[prop](...value.args);
@@ -530,83 +549,82 @@ const creon = { //stop: creon start
                     elem[prop] = value;
             }
 
-            for (const prop in configObject) {
-                if (configObject.hasOwnProperty(prop)) {
-                    const value = configObject[prop];
+            for (let prop in configObject) {
+                const value = configObject[prop];
+                prop = getFullPropNameByRegex(this, prop);
 
-                    //[DATA]
-                    //this == elem
-                    //configObject: {
-                    //    ...
-                    //    prop: value
-                    //    ...
-                    //}
+                //[DATA]
+                //this == elem
+                //configObject: {
+                //    ...
+                //    prop: value
+                //    ...
+                //}
 
-                    if (prop == "style") {
-                        if (typeof value == "string") {
-                            this.style = value;
-                        } else {
-                            this.style.few(value);
-                        }
-                    }
-                    else if (prop == "attributes") {
-                        for (let attr in value) {
-                            this.attr(attr, value[attr]);
-                        }
-                    } else if (prop == "on") { //TEST!
-                        function proccessArray(elem, value, type) {
-                            let eachElementIsArray = true;
-                            for (let i = 0; i < value.length; i++) {
-                                if (!Array.isArray(value[i])) {
-                                    eachElementIsArray = false;
-                                    break;
-                                }
-                            }
-                            if (eachElementIsArray) {
-                                // args in arr in arr, e.g.
-                                // on: [
-                                //     ['hover', e => ..., e => ...],
-                                //     ['click', e => ...]
-                                // ]
-                                value.forEach(args => {
-                                    if (type) args.unshift(type);
-                                    elem.on(...args);
-                                });
-                            } else {
-                                if (!Array.isArray(value)) value = [value];
-                                if (type) value.unshift(type);
-                                elem.on(...value); //e.g. on: ['hover', e => ..., e => ...], //args in arr
-                            }
-                        }
-
-                        if (Array.isArray(value) && value.length > 0) { //TEST!
-                            proccessArray(this, value);
-                        } else if (typeof value == "object") { //is usual object test!
-                            if (value._isCreonDontTouch) continue;
-                            if (value._isCreonRunner) {
-                                //1.
-                                // on: [
-                                //     ['hover', e => ..., e => ...],
-                                //     ['click', e => ...]
-                                // ]
-                                //2.
-                                // on: ['hover', e => ..., e => ...],
-                                this.on(...value.args);
-                            } else {
-                                //else if usual object
-                                for (const eventType in value) {
-                                    const eventHandler = value[eventType];
-                                    if (Array.isArray(eventHandler) && eventHandler.length > 0) {
-                                        const eventHandlersArray = eventHandler;
-                                        proccessArray(this, eventHandlersArray, eventType);
-                                    }
-                                }
-                            }
-                        } else throw new Error('Extpected: Element.config({ ..., on: (Array | Object), ...}). But recieved ' + typeof value + '. Use Array or Object instead.');
+                if (prop == "style") {
+                    if (typeof value == "string") {
+                        this.style = value;
                     } else {
-                        //if (!style && !on)
-                        configSingle(this, prop, value);
+                        this.style.few(value);
                     }
+                }
+                else if (prop == "attributes") {
+                    for (let attr in value) {
+                        this.attr(attr, value[attr]);
+                    }
+                } else if (prop == "on") { //TEST!
+                    function proccessArray(elem, value, type) {
+                        let eachElementIsArray = true;
+                        for (let i = 0; i < value.length; i++) {
+                            if (!Array.isArray(value[i])) {
+                                eachElementIsArray = false;
+                                break;
+                            }
+                        }
+                        if (eachElementIsArray) {
+                            // args in arr in arr, e.g.
+                            // on: [
+                            //     ['hover', e => ..., e => ...],
+                            //     ['click', e => ...]
+                            // ]
+                            value.forEach(args => {
+                                if (type) args.unshift(type);
+                                elem.on(...args);
+                            });
+                        } else {
+                            if (!Array.isArray(value)) value = [value];
+                            if (type) value.unshift(type);
+                            elem.on(...value); //e.g. on: ['hover', e => ..., e => ...], //args in arr
+                        }
+                    }
+
+                    if (Array.isArray(value) && value.length > 0) { //TEST!
+                        proccessArray(this, value);
+                    } else if (typeof value == "object") { //is usual object test!
+                        if (value._isCreonDontTouch) continue;
+                        if (value._isCreonRunner) {
+                            //1.
+                            // on: [
+                            //     ['hover', e => ..., e => ...],
+                            //     ['click', e => ...]
+                            // ]
+                            //2.
+                            // on: ['hover', e => ..., e => ...],
+                            this.on(...value.args);
+                        } else {
+                            //else if usual object
+                            for (const eventType in value) {
+                                const eventHandler = value[eventType];
+                                if (Array.isArray(eventHandler) && eventHandler.length > 0) {
+                                    const eventHandlersArray = eventHandler;
+                                    proccessArray(this, eventHandlersArray, eventType);
+                                }
+                            }
+                        }
+                    } else throw new Error('Extpected: Element.config({ ..., on: (Array | Object), ...}). But recieved ' + typeof value + '. Use Array or Object instead.');
+                } else {
+                    //if (!style && !on)
+                    configSingle(this, prop, value);
                 }
             }
             return this;

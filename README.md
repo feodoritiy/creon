@@ -15,7 +15,7 @@
 
 Алгоритм:
 
-1. Скачать [файл]((https://raw.githubusercontent.com/feodoritiy/creon/master/src/creon.js);
+1. Скачать [файл](https://raw.githubusercontent.com/feodoritiy/creon/master/src/creon.js);
 2. `<script src="путь_к_файлу/creon.js"><script>`;
 3. Прочитать [документацию](https://feodoritiy.github.io/creon/);
 4. Наслаждаться жизнью 😀.

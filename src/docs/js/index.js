@@ -9,3 +9,18 @@ links.forEach((link, i) => {
         });
     });
 });
+
+const asideFloat = sel('aside.float');
+const menuButton = asideFloat.sel('.menu-button');
+const preElemenets = sela('main pre');
+
+menuButton.on('clickToggle',
+    e => {
+        [asideFloat.style.few({ width: '0', minWidth: '0' }), menuButton.style.left = '-1em'];
+        for (let pre of preElemenets) pre.style.overflow = '';
+    },
+    e => {
+        [asideFloat.style.few({ width: '', minWidth: '' }), menuButton.style.left = ''];
+        for (let pre of preElemenets) pre.style.overflow = 'hidden';
+    },
+);

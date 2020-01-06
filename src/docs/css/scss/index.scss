@@ -2,6 +2,8 @@
 	box-sizing: border-box;
 }
 
+$phoneWidth: 600px;
+
 a {
 	&:link,
 	&:visited,
@@ -27,9 +29,10 @@ a {
 	}
 }
 
+$bodyBgColor: rgb(202, 202, 183);
 body {
 	padding: 1em;
-	background: rgb(202, 202, 183);
+	background: $bodyBgColor;
 	padding-left: 0;
 	margin: 0;
 }
@@ -76,8 +79,9 @@ main {
 	flex-direction: row;
 
 	.content {
-		width: calc(100% - #{$asideWidth - 1em});
-		padding-left: 1.5em;
+		// width: calc(100% - #{$asideWidth - 1em});
+		width: auto;
+		padding-left: 1em;
 		overflow: hidden;
 		text-align: justify;
 		font-size: 1.2em;
@@ -85,14 +89,59 @@ main {
 }
 
 aside {
+	&.holder {
+		@media screen and (max-width: $phoneWidth) {
+			width: 0;
+			min-width: 0;
+		}
+	}
+
 	width: $asideWidth;
+	min-width: $asideWidth;
 	height: 100vh;
+	background-color: $bodyBgColor;
+	z-index: 10;
+
+	$menuButtonSize: 3em;
+	.menu-button {
+		display: none;
+		position: fixed;
+		top: 0;
+		justify-content: center;
+		align-items: center;
+		text-align: center;
+		left: $asideWidth - 1em;
+		min-width: $menuButtonSize;
+		width: $menuButtonSize;
+		height: $menuButtonSize;
+		border-radius: 0 0.5em 0.5em 0;
+		background-color: #d4d4c5;
+		cursor: pointer;
+		transition: 0.5s;
+		box-shadow: 5px 5px 5px 0px #00000050;
+
+		span {
+			font-size: 2em;
+			color: #00a1d9;
+			display: flex;
+			margin-top: -0.1em;
+		}
+
+		@media screen and (max-width: $phoneWidth) {
+			display: flex;
+		}
+	}
 
 	&.float {
 		position: fixed;
 		box-shadow: inset -10px 0px 5px -5px #00000050;
 		top: 0;
 		overflow: auto;
+		transition: 0.5s;
+
+		@media screen and (max-width: $phoneWidth) {
+			box-shadow: 10px 0px 5px -5px #00000050;
+		}
 	}
 
 	div {

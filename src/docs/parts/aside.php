@@ -1,4 +1,6 @@
-<aside class="float">
+<aside class="holder"></aside>
+
+<aside class="float" style="width: 0px; min-width: 0px;">
     <div>
         <span class="aside__group-title">Методы элементов</span>
 
@@ -46,7 +48,7 @@
 
         <span class="aside__link" title="Разбитб текст на буквы для возможности анимации">.lettering</span>
     </div>
-</aside>
-<aside>
 
+    <div class="menu-button" style="left: -1em;">
+        <span>&#9776;</span></div>
 </aside>

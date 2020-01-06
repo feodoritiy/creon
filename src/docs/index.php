@@ -28,3 +28,6 @@ foreach ($cssDir as $i => $filename) {
         chmod($target_folder . 'css/' . $filename, 0777);
     }
 }
+
+copy('js/index.js', $target_folder . 'js/index.js');
+chmod($target_folder . 'js/index.js', 0777);

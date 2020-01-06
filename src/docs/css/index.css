@@ -2,6 +2,10 @@
   box-sizing: border-box;
 }
 
+a:link, a:visited, a:active {
+  color: #15b2f0;
+}
+
 .creon-logo_large {
   display: flex;
   justify-content: center;

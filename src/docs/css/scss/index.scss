@@ -2,6 +2,14 @@
 	box-sizing: border-box;
 }
 
+a {
+	&:link,
+	&:visited,
+	&:active {
+		color: rgb(21, 178, 240);
+	}
+}
+
 .creon-logo_large {
 	display: flex;
 	justify-content: center;

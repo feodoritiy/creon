@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>Creon Documentation</title>
+
+    <link rel="apple-touch-icon" sizes="57x57" href="./favicon/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="./favicon/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="./favicon/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="./favicon/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="./favicon/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="./favicon/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="./favicon/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="./favicon/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="./favicon/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="./favicon/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="./favicon/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./favicon/favicon-16x16.png">
+    <link rel="manifest" href="./favicon/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="./favicon/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    <link rel="stylesheet" href="./css/index.css">
+    <link rel="stylesheet" href="./css/prism.css">
+</head>
+
+<body><main>
+    <aside class="float">
+    <div>
+        <span class="aside__group-title">Методы элементов</span>
+
+        <span class="aside__link" title="Выбор первого элемета страницы">.sel, .select</span>
+        <span class="aside__link" title="Выбор всех элементов страницы">.sela, .selectAll</span>
+        <span class="aside__link" title="Настроика элементов">.config</span>
+        <span class="aside__link" title="Сохранение свойств элемента">.backup</span>
+        <span class="aside__link" title="Создание и настройка элемента"> cre, create</span>
+        <span class="aside__link" title="Привязка событий">.on</span>
+        <span class="aside__link" title="Множественное опредедение стилей">.style.few</span>
+        <span class="aside__link" title="Изменение родителя элемента">.to</span>
+        <span class="aside__link" title="Добавление классов">.class</span>
+        <span class="aside__link" title="Удаление классов">.unclass</span>
+        <span class="aside__link" title="Проверка наличия всех классов">.hasclass</span>
+        <span class="aside__link" title="Приверка наличия одного класса">.hasanyclass</span>
+        <span class="aside__link" title="Добавить или взять атрибут">.attr</span>
+        <span class="aside__link" title="Изменить текстовое содержимое элемента">.textto</span>
+        <span class="aside__link" title="Изменить внутренний HTML элемента">.htmlto</span>
+        <span class="aside__link" title="Ссылка на родителя">.parent</span>
+        <span class="aside__link" title="Следующий соседний элемент">.next</span>
+        <span class="aside__link" title="Предыдущий соседний элемент">.prev</span>
+        <span class="aside__link" title="Первый ребёнок элемента">.firstchild</span>
+        <span class="aside__link" title="Последний ребёнок элемента">.lastchild</span>
+        <span class="aside__link" title="Создание и добавление элемента">.push</span>
+        <span class="aside__link" title="Вставить элемент перед элементом">.insert.before</span>
+        <span class="aside__link" title="Вставить элемент после элемента">.insert.after</span>
+        <span class="aside__link" title="Создать независимого клона элемента">.clone</span>
+    </div>
+
+    <div>
+        <span class="aside__group-title">Статические объекты</span>
+
+        <span class="aside__link" title="Генератор последовательностей">range</span>
+        <span class="aside__link" title="Объект с кодами клавиш клавиатуры">keycode</span>
+    </div>
+
+    <div>
+        <span class="aside__group-title">Расширение библиотеки</span>
+
+        <span class="aside__link" title="Подробно о расширении библиотеки">Как писать плагины</span>
+    </div>
+
+    <div>
+        <span class="aside__group-title">Готовые плагины</span>
+
+        <span class="aside__link" title="Разбитб текст на буквы для возможности анимации">.lettering</span>
+    </div>
+</aside>
+<aside>
+
+</aside>    <div class="content">
+        <div class="creon-logo_large"></div>
+        <h1>CREON</h1>
+<h2>Синтаксис описания функций и аргументов</h2>
+<pre><code class="language-js">имяФункции ( аргумент1:тип1, аргумент2:(тип21|ТИП22), (аргумент3:тип3 | АРГУМЕНТ4:тип4) [, аргумент5:тип5 ]=значение ) : тип возвращаемого значения или само значение</code></pre>
+<p>Тут аргумент2 может принимать один из двух типов данных и является необязательным, принимая значение &quot;значение&quot; по умолчанию. После идут аргументы 3 и 4, из которых надо выбрать один и его тип. Аргумент 5 является необязательным и по умолчанию используется значение &quot;значение&quot;.</p>
+<p>Варианты синтаксиса такой функции:</p>
+<pre><code class="language-js">имяФункции ( аргумент1:тип1, аргумент2:тип21, аргумент3:тип3 ) : тип возвращаемого значения или само значение
+
+имяФункции ( аргумент1:тип1, аргумент2:ТИП22, аргумент3:тип3 ) : тип возвращаемого значения или само значение
+
+имяФункции ( аргумент1:тип1, аргумент2:тип21, АРГУМЕНТ4:тип4 ) : тип возвращаемого значения или само значение
+
+имяФункции ( аргумент1:тип1, аргумент2:ТИП22, АРГУМЕНТ4:тип4 ) : тип возвращаемого значения или само значение</code></pre>
+<p>И все варианты выше но с аргументом 5 в конце, например:</p>
+<pre><code class="language-js">имяФункции ( аргумент1:тип1, аргумент2:тип21, аргумент3:тип3, аргумент5:тип5 ) : тип возвращаемого значения или само значение</code></pre>
+<h3>sel, select, .sel, .select</h3>
+<pre><code class="language-js">sel( (selector:string | objectToSelect:HTMLElement), parent:HTMLElement ) : HTMLElement</code></pre>
+<pre><code class="language-js">select( (selector:string | objectToSelect:HTMLElement), parent:HTMLElement ) : HTMLElement</code></pre>
+<p>Функция select является ссылкой на функцию sel и была добавлена с целью дать возможность писать более читаемый код.</p>
+<p>Если в функцию первым аргументом передан объект страницы, то ему будет добавлен весь функционал библиотеки.
+Если же передана строка, то функция расценивает её как селектор и выполняет поиск элемента по селектору. После того как элемент будет найден ему будут добавлен весь функционал библиотеки.</p>
+<p>Если вызывать функции библиотеки на элементах страницы, которые не были выбраны или получены из функций библиотеки, то вы получите ошибку &quot;Функция не определена&quot;.</p>
+<p>Пример:</p>
+<pre><code class="language-js">let block = sel('div#block');
+let block1 = select('div#block1');
+
+block.class('class1');</code></pre>
+<p>Эквивалент в нативном js:</p>
+<pre><code class="language-js">//После использования такого кода функции библиотеки не будут работать
+let block = document.querySelector('div#block');
+let block1 = document.querySelector('div#block1');
+
+block.class('class1'); //тут ошибка Uncaught TypeError: block.class is not a function</code></pre>
+<p>В функцию можно передать родительский элемент, в котором будет произведён поиск по селектору.</p>
+<p>Пример:</p>
+<pre><code class="language-js">let block = sel('div#block', document.body);</code></pre>
+<p>Эквивалент в нативном js:</p>
+<pre><code class="language-js">let block = document.body.querySelector('div#block');</code></pre>
+<p>Указывать родителя вторым аргументом неудобно, поэтому каждый элемент выбранный элемент имеет методы .sel и .select.
+В этих методах вместо родителя подставляется элемент, с которого выполняется вызов метода (this).</p>
+<p>Пример:</p>
+<pre><code class="language-js">let parent = sel('#parent');
+let innerBlock = parent.sel('.inner-block');</code></pre>
+<p>Эквивалент в нативном js:</p>
+<pre><code class="language-js">let parent = document.querySelector('#parent');
+let innerBlock = parent.querySelector('.inner-block');</code></pre>
+<h3>sela, selectAll, .sela, .selectAll</h3>
+<pre><code class="language-js">sela( (selector:string | objectsToSelect:Array&lt;HTMLElement&gt;), parent:HTMLElement ) : NodeList</code></pre>
+<pre><code class="language-js">selectAll( (selector:string | objectToSelect:Array&lt;HTMLElement&gt;), parent:HTMLElement ) : NodeList</code></pre>
+<p>Функция selectAll является ссылкой на функцию sela и была добавлена с целью дать возможность писать более читаемый код.</p>
+<p>Если в функцию первым аргументом переданы объекты страницы, то им будет добавлен весь функционал библиотеки.
+Если же передана строка, то функция расценивает её как селектор и выполняет поиск элементов по селектору. После того как элементы будут найдены им будут добавлены все функции библиотеки.</p>
+<p>Если вызывать функции библиотеки на элементах страницы, которые не были выбраны или получены из функций библиотеки, то вы получите ошибку &quot;Функция не определена&quot;.</p>
+<p>Пример:</p>
+<pre><code class="language-js">let blocks = sela('div');
+let spans = selectAll('span');
+
+blocks[0].class('class1');</code></pre>
+<p>Эквивалент в нативном js:</p>
+<pre><code class="language-js">//После использования такого кода функции библиотеки не будут работать
+let blocks = document.querySelectorAll('div');
+let spans = document.querySelectorAll('span');
+
+blocks[0].class('class1'); //тут ошибка Uncaught TypeError: block.class is not a function</code></pre>
+<p>В функцию можно передать родительский элемент, в котором будет произведён поиск по селектору.</p>
+<p>Пример:</p>
+<pre><code class="language-js">let blocks = sela('div', document.body);</code></pre>
+<p>Эквивалент в нативном js:</p>
+<pre><code class="language-js">let blocks = document.body.querySelectorAll('div');</code></pre>
+<p>Указывать родителя вторым аргументом неудобно, поэтому каждый элемент выбранный элемент имеет методы .sela и .selectAll.
+В этих методах вместо родителя подставляется элемент, с которого выполняется вызов метода (this).</p>
+<p>Пример:</p>
+<pre><code class="language-js">let parentBlocks = sela('div');
+let innerBlocks = parentBlocks[0].sela('.inner-block');
+innerBlocks.forEach(block =&gt; block.textContent = 'новое текстовое содержимое каждого внутреннего блока');</code></pre>
+<p>Эквивалент в нативном js:</p>
+<pre><code class="language-js">let parentBlocks = document.querySelectorAll('div');
+let innerBlocks = parentBlocks[0].querySelectorAll('.inner-block');
+innerBlocks.forEach(block =&gt; block.textContent = 'новое текстовое содержимое каждого внутреннего блока');</code></pre>
+<h3>.config</h3>
+<pre><code class="language-js">element.config( configObject:object [, printFullNameOfShortPropName:boolean ]=false ) : element</code></pre>
+<p>Функция выполняет настройку объекта по объекту переданному в качестве аргумента. Функция была создана с целью сократить множественное обращение к одному и тому же элементу при его настройке.</p>
+<p>Пример:</p>
+<pre><code class="language-js">let block = sel('div');
+block.config({
+    textContent: 'новое текстовое содержиомое',
+    className: 'class1 class2'
+});</code></pre>
+<p>Эквивалент в нативном js:</p>
+<pre><code class="language-js">let block = document.querySelector('div');
+block.textContent = 'новое текстовое содержиомое';
+block.className = 'class1 class2';</code></pre>
+<p><strong>Стили</strong></p>
+<p>Можно изменять стили используя свойство style как объект:</p>
+<p>Пример:</p>
+<pre><code class="language-js">let block = sel('#block');
+block.config({
+    textContent: 'текст',
+    style: {
+        color: 'red',
+        fontSize: '2em',
+        fontFamily: 'monospace'
+    }
+});</code></pre>
+<p>Эквивалент на нативном js:</p>
+<pre><code class="language-js">let block = document.querySelector('#block');
+
+block.textContent = 'текст';
+block.style.color = 'red';
+block.style.fontSize = '2em';
+block.style.fontFamily = 'monospace';</code></pre>
+<p><strong>Атрибуты</strong></p>
+<p>Можно изменять атрибуты, используя свойство attributes как объект.</p>
+<p>Пример:</p>
+<pre><code class="language-js">let block = sel(document.querySelector('#block'));
+block.config({
+    textContent: 'text',
+    attributes: {
+        attr1: 'value1',
+        'attr2': 'value2',
+        'attr-with-dashes': 'dashes value'
+    }
+});</code></pre>
+<p>Эквивалент на нативном js:</p>
+<pre><code class="language-js">let block = document.querySelector('#block');
+
+block.textContent = 'text';
+block.setAttribute('attr1', 'value1');
+block.setAttribute('attr2', 'value3');
+block.setAttribute('attr-with-dashes', 'dashes value');</code></pre>
+<p><strong>Обработчики событий</strong></p>
+<p>Можно передавать несколько обработчиков сразу. Если значением объекта конфигурации будет массив, то содержимое массива расценивается как аргументы функции и происходит единичный вызов метода .on. Если же был передан массив, у когторого каждый элемент является массивом, то будет выполнен множественный вызов метода .on с каждым набором аргументов.</p>
+<p>Пример:</p>
+<pre><code class="language-js">//один обработчик в объекте конфигурации
+sel('#block').config({
+    on: ['click', e =&gt; console.log('click')]
+});</code></pre>
+<pre><code class="language-js">//несколько обработчиков в объекте конфигурации
+sel('#block').config({
+    on: [
+        ['click', e =&gt; console.log('click1')],
+        ['click', e =&gt; console.log('click2')],
+        ['hover', e =&gt; console.log('mouseenter')]
+    ]
+});</code></pre>
+<p>Эквивалент в нативном js:</p>
+<pre><code class="language-js">let block = document.querySelector('#block');
+block.addEventListener('click', e =&gt; console.log('click'));</code></pre>
+<pre><code class="language-js">let block = document.querySelector('#block');
+block.addEventListener('click', e =&gt; console.log('click1'));
+block.addEventListener('click', e =&gt; console.log('click2'));
+block.addEventListener('mouseenter', e =&gt; {
+    //creon is also make backup here
+    console.log('click1'));
+});
+block.addEventListener('mouseleave', e =&gt; {
+    //this handler generated automaticaly because of use onspecial - "hover"
+    //here element is restored from backup
+
+    //more about .on method in .on section of documentation
+});</code></pre>
+<p><strong>Сокращения</strong></p>
+<p>Можно писать имена свойств не полностью. Если в объекте конфинурации при настройке было обнаружено свойство, которое не принадлежит настраиваевому объекту, то будет выполнен поиск (чувствительный к регистру) похожих свойств:</p>
+<ol>
+<li>ПЕРВОЕ свойство, которое начинается как описанное свойство объекта конфигурации;</li>
+<li>Если прошлый поиск не дал результатов то будет выполнен поиск с абстрактными промежутками между символами, при условии что свойство начинается с той же буквы. ПЕРВОЕ свойство прошедшее поиск будет настроено как описано в объекте конфигурации.</li>
+</ol>
+<p>Если вы знаете что такое регулярные выражения:</p>
+<ol>
+<li>ПЕРВОЕ свойство которое удобвлетворяет 
+<pre><code>/^prop/</code></pre>
+<p>, где prop - свойство объекта конфигурации;</p></li>
+<li>ПЕРВОЕ свойство которое удобвлетворяет 
+<pre><code>/^p.*r.*o.*p/</code></pre>
+<p>, где p, r, o, p - буквы названия свойства (prop) объекта конфигурации;</p></li>
+</ol>
+<p>ПЕРВОЕ написано капсом не просто так. Иногда использование сокращений может приводить к тому, что вы будете настраивать одно свойство объекта, а настроиться другое, т. к. перед ним поиску удовлетворило другое свойство.
+Например, вы сокращаете свойство &quot;textContent&quot; до &quot;text&quot;, но поиск найдёт метод textto раньше. В итоге вы не измените текстовое содержимое элемента и не сможете в дальнейшем исользовать метод textto. Для использования сокращений Вам надо будет немного поэксперементировать, но в данном случае мы можем сократить &quot;textContent&quot; до &quot;tC&quot; и все пройдёт гладко.</p>
+<p>Чтобы посмотреть как функция преобразовала ваши сокращения передайте второй параметр как true. Тогда в консоль будут выведены все преобразования сокращений в полные имена свойств.</p>
+<p><em>Сокращенная запись свойств работает только для корневых свойств объекта конфигурации. Во вложенных объектах поиска полного названия свойства не будет. Например в объекте стилей - надо писать названия свойств полностью, не используя сокращения.</em></p>
+<p>Например:</p>
+<pre><code class="language-js">element.config({
+    tC: 'text', 
+    text: 'text',
+    sty: {
+        color: '#f00',
+        border: '1px solid green',
+    }
+}, true);
+//tC &gt;&gt; textContent
+//text &gt;&gt; textto
+//sty &gt;&gt; style</code></pre>
+<p><strong>Использование методов бибилиотеки в объекте конфигурации</strong></p>
+<p>Чтобы свойство расценивалось как вызов метода библиотеки должно сойтись два условия:</p>
+<ol>
+<li>Свойство в объекте конфигурации должно называтся так же как и сам метод (если вы используете сокращенное название то после определения полного имени оно должно быть именем какого-нибудь метода библиотеки);</li>
+<li>Значение этого свойсвта - массив, каждый элемент когрого является аргументом для метода библиотеки;</li>
+</ol>
+<p>Пример:</p>
+<pre><code class="language-js">sel('#block').config({
+    class: ['class1', 'class2'],
+    textto: ['новое текстовое содержимое'],
+    to: [sel('#newParent')]
+});</code></pre>
+<p>Эквивалент без использования метода конфигурации (каждый метод возвращает сам объект):</p>
+<pre><code class="language-js">sel('#block').class('class1', 'class2')
+    .textto('новое текстовое содержимое')
+    .to(sel('#newParent'));</code></pre>
+<p>Или методы по отдельности:</p>
+<pre><code class="language-js">let block = sel('#block');
+block.class('class1', 'class2');
+block.textto('новое текстовое содержимое');
+block.to(sel('#newParent'));</code></pre>
+<p>Как видно из примеров, использование исключительно функций библиотеки проще без вызова метода конфугурации, так как каждая функция возвращаем сам объект. Но когда требуется настроить несколько свойств элемета и вызвать функции библиотеки на одном элементе, то возможность вызвать эти методы внутри объекта конфигурации будет полезна.</p>
+<p><strong>Неприкосновенные свойства</strong></p>
+<p>Если вы хотите чтобы переданное значение никак не преобразовывалось (например хотите перезаписать методы библиотеки на элементе), то используте специальную функцию - creon.sacred(data).
+Эта функция говорит конфигуратору, что значение надо перисвоить как оно есть (без вызовов и тп).</p>
+<p>Пусть нам надо чтобы в свойстве class хранился массив, а не функция библиотеки. Если мы просто передадим массив, то будет вызван метод class с аргументами. Решение ниже.
+Пример :</p>
+<pre><code class="language-js">let block = sel('#block').config({
+    tC: 'новое тексовое содержимое',
+    class: creon.sacred([1, 2, 3])
+});
+
+console.log(block.class); //1,2,3</code></pre>
+<p>Справедливо заметить, что проще отдельно присовить нужное значение, но с другой стороны удобно, когда все преобразования над объктом происходят в одном месте.</p>
+<h3>.backup</h3>
+<pre><code class="language-js">element.backup ( [ props:array | mode:str | prop:str ]='tag' ) : configObject:object</code></pre>
+<p>Функция позволяет создать объект конфигурации по объекту. Соответсвенно, если выполнить конфигурацию по этому объекту, то старые значение восстановятся. Поэтому метод называется backup.</p>
+<p>Все параметры передаваемые функции являются необязательными и влияют на получаемый объект конфигурации.</p>
+<p>Аргументы (выберите один из вариантов):</p>
+<ol>
+<li>props:array - массив строк, каждая из которых является названием свойства элемента. Если нужно скопировать, допустим название тэга и атрибуты, то аргументом функции станет массив ['tagName', 'attributes'];</li>
+<li>mode:str - режим. creon.backup - это объект, который хранит режимы. Ключи этого объекта отражают название режима, а значения - это массивы строк, каждая из которых является названием свойства элемента (то есть массив как props:array). Когда аргументом функции является строка, сперва проиcходит поиск режима с таким именем. То есть каждый режим - это готовый вариант props. Фактически происходит обращение к объекту creon.backup, это можно записать так: 
+<pre><code>element.backup(creon.backup[mode])</code></pre>
+<p>, где mode - это название режима;</p></li>
+<li>prop:str - имя свойства. Если в функцию была передана строка и такого режима нет в объекте creon.backup, то аргумент расценивается как одно свойство, и в бэкапе будет только оно.</li>
+</ol>
+<p><em>Функция не является универсальной, например она не умеет копировать children, поэтому рекомендуется использовать режимы, так как они содержат только проверенные свойства.</em></p>
+<h3>cre, create - создание элеметов страницы</h3>
+<pre><code class="language-js">cre ( tag:str [, config:object ] ) : HTMLElement</code></pre>
+<p>Функция создает элемент страницы и позволяет выполнить его первоначальную конфигурацию.</p>
+<p>Функция create работает в два этапа:</p>
+<ol>
+<li>Создаётся элемент страницы через document.createElement;</li>
+<li>Если был передан объект конфигурации, то на созданном объекте вызывается метод .config с переданным объектом конфигурации.</li>
+</ol>
+<p>Пример:</p>
+<pre><code class="language-js">cre('div', { 
+    tC: 'text', 
+    class: ['class1', 'class2'],
+    to: [sel('#newParent')]
+});</code></pre>
+<p>Эквивалент в нативном js:</p>
+<pre><code class="language-js">let block = document.createElement('div');
+block.textContent = 'text';
+block.classList.add('class1', 'class2');
+document.querySelector('#newParent').append(block);</code></pre>
+<p><strong>Тэг как свойство</strong></p>
+<p>Можно создавать объекты страницы, указывая имя тэга как своство create (или cre). Смотрите пример.</p>
+<p>Пример:</p>
+<pre><code class="language-js">cre.div({
+    textContent: 'text',
+    class: ['class1', 'class2']
+}); //тут имя тэга передаётся обращением к свойству
+
+cre('div', {
+    textContent: 'text',
+    class: ['class1', 'class2']
+}); //тут имя тэга передаётся как аргумент функции</code></pre>
+<p>Пример создания пустого блока:</p>
+<pre><code class="language-js">cre.div(); //как свойство
+cre('div'); //как аргумент
+
+//нативный js
+document.createElement('div'); //этот элемент нужно выбрать функцией sel, прежде чем использовать функции библиотеки на нём</code></pre>
+<h3>.on</h3>
+<pre><code class="language-js">element.on ( eventtypes:str, handler1:function, handler2:function, ...handlers:function, ( lasthandler:function | backuptype:str ) ) : element</code></pre>
+<p>eventtypes - это строка, которая содержит типы событий разедённые пробелом, например строка
+&quot;click mouseenter mouseleave&quot;.</p>
+<p>В функцию передаётся требуемое число обработчиков, каждый обработчик относится к каждому типу собитыя. Для стандартных типов нужен только один обработчик, но для автоматических типов (например hover), можно передавать несколько обработчиков. Подробнее о автоматических типах событий будет сказано позже.</p>
+<p>Функция .on ялвяется краткой записью .addEventListener, но:</p>
+<ol>
+<li>Все обработчики сохраняются в объекте, в свойстве events;</li>
+<li>Можно сразу удалить все события или часть из них, вызвав метод remove на выбранном сохранённом обработчике;</li>
+<li>Библиотека использует специальные обработчики событий (hover, clickToggle, focus, ...).</li>
+</ol>
+<p>Теперь подробнее.</p>
+<p><strong>events</strong></p>
+<p>Объект events имеется у каждого объекта. Он хранит в себе все сохранённые обработчики и позволяет их быстро удалить.</p>
+<p>Пример объекта events:</p>
+<pre><code class="language-js">//обращение к объекту событий
+sel('#block').events;
+//пример объекта событий
+{
+    click: {
+        0: e =&gt; 'click handler',
+        1: function (e) { 'another click handler' },
+    },
+    mouseenter: {
+        0: e =&gt; e.target.style.color = 'red'
+    },
+    mouseleave: {
+        0: e =&gt; e.target.style.color = 'black'
+    }
+}</code></pre>
+<p>Далее мы создадим такой же объект events. </p>
+<p><em>Имейте в виду, что объект events не гарантирует точного отображения обработчиков событий, если вы будете его менять в ручную. Обработчики добавляются в него автоматически при вызове метода .on. Если вы будете использовать метод .addEventListener, то обработчики также не будут добавляться к объект events.</em></p>
+<p>Давайте присвоим все обработчики как в варианте выше.
+Пример:</p>
+<pre><code class="language-js">//1. с использованием конфигурации:
+sel('#block').config({
+    on: [
+        ['click', e =&gt; 'click handler'],
+        ['click', function (e) { 'another click handler' }],
+        ['mouseenter', e =&gt; e.target.style.color = 'red'],
+        ['mouseleave', e =&gt; e.target.style.color = 'black'],
+    ]
+});
+
+//2. без конфигурации, просто вызовы метода on
+sel('#block')
+    .on('click', e =&gt; 'click handler')
+    .on('click', () =&gt; 'handler with name')
+    .on('click', function (e) { 'another click handler' })
+    .on('mouseenter', e =&gt; e.target.style.color = 'red')
+    .on('mouseleave', e =&gt; e.target.style.color = 'black');</code></pre>
+<p>Теперь объект events полностью соотвествует тому, что был представлен в начале.</p>
+<p>Допустим нам надо удалить обработчик</p>
+<p><strong>Специальные обработчики событий (автообработчики)</strong></p>
+<p>Функции автообработчиков хранятся в свойстве объекта creon - creon.onspecial. Каждое свойство этого объекта отвечает за специальные обработчики событий. Если функция .on получает тип события, который содержится в creon.onspecial, то все аргументы за исключением типа события пережаются из функции .on в функцию creon.onspecial.eventName. Далее будут рассмотрен список специальных обработчиков и варианты их использования. </p>
+<p>Список обработчиков:</p>
+<ul>
+<li><code>hover ( hoverin:function, ( hoverout:function | [ backuptype:(str|array) ]='tag' ) ) : element</code></li>
+<li><code>clickToggle ( clickin:function, ( clickout:function | [ backuptype:(str|array) ]='tag' ) ) : element</code></li>
+<li><code>focus ( focusin:function, ( focusout:function | [ backuptype:(str|array) ]='tag' ) ) : element</code></li>
+</ul>
+<p>Простыми словами: каждая функция по-нормальному должна получать два обработчика, но если она получает один обработчик, то перед выполнением первого обработчика будет сделан бэкап элемента (.backup) и автоматически будет создан второй обработчик, в котором элемент восстанавливается из этого бэкапа. Вместо второго обработчика можно передать аргументы для функции бэкапа, но если ничего не пердать, то автоматически будет использован режим бэкапа tag, который сохраняет в резервную копию стили и классы элемента.</p>
+<p>На примере:</p>
+<p>Допустим надо при наведении (mouseenter) на блок изменить цвет его шрифта на красный, а при сведении (mouseleave) вернуть изначальный чёрный цвет шрифта.</p>
+<p>Тогда будем использовать hover.
+Пример:</p>
+<pre><code class="language-js">//вариант сделать всё руками
+sel('#block')
+    .on('mouseenter', e =&gt; e.target.style.color = 'red')
+    .on('mouseleave', e =&gt; e.target.style.color = 'black');
+
+//вариант использовать специальный тип событий hover и описать руками, передав две функции
+sel('#block')
+    .on('hover', 
+        e =&gt; e.target.style.color = 'red', //первый на наведение
+        e =&gt; e.target.style.color = 'black' //второй на сведение
+    );
+
+//самый короткий вариант - автообработчик (*)
+sel('#block').on('hover', e =&gt; e.target.style.color = 'red');</code></pre>
+<p>Давайте разберёмся что происходит в самом коротком варианте (*) на самом деле.</p>
+<ol>
+<li>Наводим на блок;</li>
+<li>Библиотека делает бэкап блока;</li>
+<li>Библиотека выполняет обработчик наведения, который был описан руками;</li>
+<li>Сводим с блока;</li>
+<li>Библиотека восстанавливает блок из бэкапа;</li>
+</ol>
+<p>Подробно о бэкапе было сказано ранее. Всё специальные обработчики по умолчанию делают бэкап в режиме 'tag'. Режим tag создаёт бэкап стилей и классов элемента.</p>
+<p>Действия автообработчика hover внутри (эквивалентны краткой форме (*) выше):</p>
+<pre><code class="language-js">let backup = {};
+sel('#block')
+    .on('mousenter', e =&gt; {
+        backup = e.target.backup(); //бэкап перед применением обработчика
+        (e =&gt; e.target.style.color = 'red')(e) //вызов самого обработчика
+    })
+    .on('mouseleave', e =&gt; { //создаётся автоматическое возвращение к начальным стилям
+        e.target.config(backup); //возвращаемся к изначальным стилям
+    });</code></pre>
+<p>Автообработчики полезны и позволяют упростить написание обработчиков, для противоположных или последовательных событий. </p>
+<p>Чтобы добавить свой автообработчик добавьте новое свойство объекту creon.onspecial. Этот объект используется во время вызовова метода .on, так что новый автообработчик станет полноценной частью библиотеки.</p>
+<p>Например, представим что в библиотеке нет автообработчика focus, но мы хотим его добавить. Код автообработчика соответсвует коду в исходниках библиотеки.</p>
+<p>Пример создания собственного автообработчика:</p>
+<pre><code class="language-html">&lt;script src="creon.js"&gt;&lt;/script&gt; &lt;!-- creon library --&gt;
+
+&lt;!-- out custom special event type --&gt;
+&lt;script&gt;
+    creon.onspecial.focus = function (focusin, focusout = 'tag') {
+        const elem = this; //in thisArgs is current element of page
+        let backup; //closing variable
+        this.on('focusin', e =&gt; { //add event listener for focusin
+            if (!focusout || typeof focusout == "string") { //if focusout is not function
+                backup = elem.backup(focusout); //make backup
+            }
+            focusin(e); //call focusin with event argument
+        });
+        this.on('focusout', e =&gt; { //add event listener for focusout
+            if (!focusout || typeof focusout == "string") { //if focusout is not function
+                elem.config(backup); //restore from backup
+            } else { //if focusout exist
+                focusout(e); //run focusout handler with event argument
+            }
+        });
+    };
+&lt;/script&gt;
+
+&lt;script src="index.js"&gt;&lt;/script&gt; &lt;!-- script with page logic (using creon.on.focus() inside) --&gt;</code></pre>
+<h3>plugin .style.few</h3>
+<pre><code class="language-js">element.style.few ( { stylePropsObject:object } ) : element</code></pre>
+<p>В библиотеку по умолчанию встроен плагин .style.few. Как можно понять из названия, он добавляет к объекту style у элемента метод few. Этот метод сокращает написание множественных стилевых преобразований. stylePropsObject - это объект, названия свойств которого соотвествуют названиям свойств объекта style.</p>
+<p>Пример:</p>
+<pre><code class="language-js">//использование метода few
+sel('#block').style.few({
+    color: 'red',
+    backgroundColor: '#00f',
+    opacity: 0.75,
+    borderRadius: '1em'
+});
+
+//эквивалент без метода few
+let block = sel('#block');
+block.style.color: 'red',
+block.style.backgroundColor: '#00f',
+block.style.opacity: 0.75,
+block.style.borderRadius: '1em'
+});</code></pre>
+<p><em>Этот метод используется в методе .config, для обработки объекта стилей из объекта конфигурации</em></p>
+<h3>.to</h3>
+<pre><code class="language-js">element.to( newParent:HTMLElement ) : element</code></pre>
+<p>Отрывает элеметн от текущего родителя и добавляет в конец (append) к новому.</p>
+<p>Пример:</p>
+<pre><code class="language-js">sel('#block').to(sel('#newParent'));</code></pre>
+<p>Эквивалент на нативном js:</p>
+<pre><code class="language-js">dosument.querySelector('#newParent').append(document.querySelector('#block'));</code></pre>
+<p>Часто удобно добавить элемент к родителю именно в конце, поэтому .to удобнее чем классический append.</p>
+<h3>.class</h3>
+<pre><code class="language-js">element.class( class1:str, class2:str, ...) : element</code></pre>
+<p>Добавляет элементу классы. Является сокращением от classList.add.</p>
+<p>Пример:</p>
+<pre><code class="language-js">sel('#block').class('class1', 'class2');</code></pre>
+<p>Эквивалент в нативном js:</p>
+<pre><code class="language-js">document.querySelector('#block').classList.add('class1', 'class2');</code></pre>
+<h3>.unclass</h3>
+<pre><code class="language-js">elem.unclass( class1:str, class2:str, ... ) : element</code></pre>
+<p>Удаляет классы у элемента. Является сокращением от classList.remove.</p>
+<p>Пример:</p>
+<pre><code class="language-js">sel('#block').unclass('class1', 'class2');</code></pre>
+<p>Эквивалент в нативном js:</p>
+<pre><code class="language-js">document.querySelector('#block').classList.remove('class1', 'class2');</code></pre>
+<h3>.hasclass</h3>
+<pre><code class="language-js">element.hasclass( class1:str, class2:str, ... ) : boolean</code></pre>
+<p>Проверяет наличие классов на элементе. Если на элементе присутствуют все переданные классы вернёт true. Если не найден хотя бы один класс - false.</p>
+<p>Пример:</p>
+<pre><code class="language-js">sel('#block').class('class1', 'class2').hasclass('class1', 'class2') //true
+sel('#block').unclass('class1').hasclass('class1', 'class2')         //false</code></pre>
+<p>Эквивалент в нативном js:</p>
+<pre><code class="language-js">const block = document.querySelector('#block');
+block.classList.add('class1', 'class2');
+block.classList.contains('class1') &amp;&amp; block.classList.contains('class2'); //true
+block.classList.remove('class1');
+block.classList.contains('class1') &amp;&amp; block.classList.contains('class2'); //false</code></pre>
+<h3>.hasanyclass</h3>
+<pre><code class="language-js">element.hasanyclass( class1:str, class2:str, ... ) : boolean</code></pre>
+<p>Функция проверяет наличие хотя бы одного класса на элементе.</p>
+<p>Пример:</p>
+<pre><code class="language-js">sel('#block').class('class1', 'class2').hasanyclass('class1', 'class2') //true
+sel('#block').unclass('class1').hasanyclass('class1', 'class2')         //true
+sel('#block').unclass('classw').hasanyclass('class1', 'class2')         //false</code></pre>
+<p>Эквивалент в нативном js:</p>
+<pre><code class="language-js">const block = document.querySelector('#block');
+block.classList.add('class1', 'class2');
+block.classList.contains('class1') || block.classList.contains('class2'); //true
+block.classList.remove('class1');
+block.classList.contains('class1') || block.classList.contains('class2'); //true
+block.classList.remove('class2');
+block.classList.contains('class1') || block.classList.contains('class2'); //false</code></pre>
+<h3>.attr</h3>
+<pre><code class="language-js">element.attr( ( name:str [, value:any ] | attrsObject:object ) ) : (value:str | element)</code></pre>
+<p>Позволяет установить атрибут (или несколько) элементу или взять его значение. Если первый аргумент является строкой и передан аргумент value, то выполняется добавление атрибута (setAttribute), иначе возвращается значение атрибута (getAttribute). Если же первым элементом передан объект, то выполняется множественное назначение атрибутов, после которого возвращается сам элемент.</p>
+<p>Пример:</p>
+<pre><code class="language-js">sel('#block').attr('my-attr', 'my-value').attr('my-attr'); //'my-value'
+
+sel('#block').attr({
+    myAttr1: 'value1',
+    'my-attr-2': 'my-value-2'
+})
+sel('#block').attr('myAttr1'); //'value1'
+sel('#block').attr('my-attr-2'); //'my-value-2'</code></pre>
+<p>Эквивалент в нативном js:</p>
+<pre><code class="language-js">const block = document.querySelector('#block');
+block.setAttribute('my-attr', 'my-value');
+block.getAttribute('my-attr'); //'my-value'
+
+block.setAttribute('myAttr1', 'value1');
+block.setAttribute('my-attr-2', 'my-value-2');
+block.getAttribute('myAttr1'); //'value1'
+block.getAttribute('my-attr-2'); //'my-value-2'</code></pre>
+<h3>.textto</h3>
+<pre><code class="language-js">element.textto( text:str ) : element</code></pre>
+<p>Меняет текстовое содержимое элемента (textContent) на новое и возвращает элемент.</p>
+<p>Пример:</p>
+<pre><code class="language-js">sel('#block').textto('new text');</code></pre>
+<p>Эквивалент в нативном js:</p>
+<pre><code class="language-js">document.querySelector('#block').textContent = 'new text';</code></pre>
+<h3>.htmlto</h3>
+<pre><code class="language-js">element.htmlto( html:str ) : element</code></pre>
+<p>Меняет содержимое элемента (innerHTML) на новое и возвращает элемент.</p>
+<p>Пример:</p>
+<pre><code class="language-js">sel('#block').htmlto('&lt;strong&gt;new innerHTML&lt;/strong&gt;');</code></pre>
+<p>Эквивалент в нативном js:</p>
+<pre><code class="language-js">document.querySelector('#block').innerHTML = '&lt;strong&gt;new innerHTML&lt;/strong&gt;';</code></pre>
+<h3>.parent</h3>
+<pre><code class="language-js">element.parent( [times:number]=1 ) : HTMLElement</code></pre>
+<p>Проходит по цепочке родителей и возвращает нужного. Если нет аргументов, то вернёт родительский элемент (parentElement) текущего элемента. Если же передано число, большее чем 1, то будет идти по цепочке родителей вверх, пока счётчик переходов к родителям не достигнет нужного числа.</p>
+<p>Пример:</p>
+<pre><code class="language-js">sel('#block').parent();
+sel('#block').parent(3);</code></pre>
+<p>Эквивалент в нативном js:</p>
+<pre><code class="language-js">document.querySelector('#block').parentElement;
+document.querySelector('#block').parentElement.parentElement.parentElement;</code></pre>
+<h3>.next</h3>
+<pre><code class="language-js">element.next( [ times:number | selector:string ]=1 ) : HTMLElement</code></pre>
+<p>Возвращает элемент который находится после текущего. Если не передать никаких параметров то вызов будет равносилен обращению к свойству nextElementSibling и мы получим элемент рядом с текущим.
+Если передать число то число переходов nextElementSibling будет соответсвовать этому числу.
+Если передать селектор, будет будет возвращён первый элемент который расположен за текущим и удовлетворяет селектору.</p>
+<p>Такая структура документа:</p>
+<pre><code class="language-pug">#blockParent
+    div.n0
+    #block
+    div.n1
+    div.n2
+    div.n3
+    span#target</code></pre>
+<p>Пример ():</p>
+<pre><code class="language-js">let block = sel('#block');
+block.next(); //div.n1
+block.next(1); //div.n1
+block.next(3); //div.n3
+block.next('div.n3'); //div.n3
+block.next('span'); //span#target
+block.next(0); //#block
+block.next(-1); //if less then 0 return self #block
+block.next('div.n0'); //null, because after #block there is no div.n0</code></pre>
+<p>Эквивалент в нативном js:</p>
+<pre><code class="language-js">let block = document.querySelector('#block');
+block.nextElementSibling; //div.n1
+block.nextElementSibling; //div.n1
+block.nextElementSibling.nextElementSibling.nextElementSibling; //div.n3
+block.parentElement.querySelector('div.n3'); //div.n3, but in creon is also check for child index be more than current element has
+block.parentElement.querySelector('span'); //span#target, but in creon is also check for child index be more than current element has
+block.nextElementSibling; //#block
+block.nextElementSibling; //if less then 0 return self #block
+null;</code></pre>
+<h3>.prev</h3>
+<pre><code class="language-js">element.prev( [ times:number | selector:string ]=1 ) : HTMLElement</code></pre>
+<p>Возвращает элемент который находится до текущего. Если не передать никаких параметров то вызов будет равносилен обращению к свойству previousElementSibling и мы получим элемент рядом с текущим.
+Если передать число то число переходов previousElementSibling будет соответсвовать этому числу.
+Если передать селектор, будет будет возвращён первый элемент который расположен перед текущим и удовлетворяет селектору.</p>
+<p>Такая структура документа:</p>
+<pre><code class="language-pug">#blockParent
+    span#target
+    div.n0
+    div.n1
+    div.n2
+    #block
+    div.n3</code></pre>
+<p>Пример ():</p>
+<pre><code class="language-js">let block = sel('#block');
+block.prev(); //div.n2
+block.prev(1); //div.n2
+block.prev(3); //div.n0
+block.prev('div.n0'); //div.n0
+block.prev('span'); //span#target
+block.prev(0); //#block
+block.prev(-1); //if less then 0 return self #block
+block.prev('div.n3'); //null, because after #block there is no div.n0</code></pre>
+<p>Эквивалент в нативном js:</p>
+<pre><code class="language-js">let block = document.querySelector('#block');
+block.previousElementSibling; //div.n2
+block.previousElementSibling; //div.n2
+block.previousElementSibling.previousElementSibling.previousElementSibling; //div.n0
+block.parentElement.querySelector('div.n3'); //div.n0, but in creon is also check for child index be more than current element has
+block.parentElement.querySelector('span'); //span#target, but in creon is also check for child index be more than current element has
+block.previousElementSibling; //#block
+block.previousElementSibling; //if less then 0 return self #block
+null;</code></pre>
+<h3>.firstchild</h3>
+<pre><code class="language-js">element.firstchild( [ newchild:HTMLElement ] ) : HTMLElement</code></pre>
+<p>Если в функцию ничего не передать, то вернёт первого ребёнка элемента (firstElementChild). Если передать элемент то вставит этот элемент в начало (prepend) и вернёт его.</p>
+<p>Пример:</p>
+<pre><code class="language-js">sel('#blockParent').firstchild(); //возвращает firstElementChild
+sel('#blockParent').firstchild(sel('#block')); //отрывает #block от старого родителя и записывает первым ребёнком #blockParent. Возвращает #block</code></pre>
+<p>Эквивалент в нативном js:</p>
+<pre><code class="language-js">document.querySelector('#blockParent').firstElementChild;
+document.querySelector('#blockParent').prepend(sel('#block'));</code></pre>
+<h3>.lastchild</h3>
+<pre><code class="language-js">element.lastchild( [ newchild:HTMLElement ] ) : HTMLElement</code></pre>
+<p>Если в функцию ничего не передать, то вернёт последнего ребёнка элемента (lastElementChild). Если передать элемент то вставит этот элемент в конец (append) и вернёт его.</p>
+<p>Пример:</p>
+<pre><code class="language-js">sel('#blockParent').lastchild(); //возвращает lastElementChild
+sel('#blockParent').lastchild(sel('#block')); //отрывает #block от старого родителя и записывает последним ребёнком #blockParent. Возвращает #block</code></pre>
+<p>Эквивалент в нативном js:</p>
+<pre><code class="language-js">document.querySelector('#blockParent').lastElementChild;
+document.querySelector('#blockParent').append(sel('#block'));</code></pre>
+<h3>.push</h3>
+<pre><code class="language-js">element.push( tag:str [, config:object ] ) : HTMLElement</code></pre>
+<p>Последовательность действий функции:</p>
+<ol>
+<li>Создаёт элемент функцией create, с переданными аргументами (функция create создаёт и настраивает элемент);</li>
+<li>Добавляет созданный элемент как последего ребёнка текущему элементу;</li>
+<li>Возвращает созданный элемент.</li>
+</ol>
+<p>Пример:</p>
+<pre><code class="language-js">sel('#block').push('span', {
+    style: {
+        color: red,
+        border: '1px solid pink',
+        display: 'block'
+    },
+    class: ['class1', 'class2'],
+}); //после выполнения функции в #block будет добавлен новый span.</code></pre>
+<p>Эквивалент на нативном js:</p>
+<pre><code class="language-js">let span = document.createElement('span');
+span.style.color = 'red';
+span.style.border = '1px solid pink';
+span.style.display = 'block';
+span.classList.add('class1', 'class2');
+document.querySelector('#block').append(span);</code></pre>
+<p><strong>Имя тэга как свойство push</strong></p>
+<p>Для удобства можно использовать свойство объекта push для передачи имени тэга.</p>
+<p>Пример:</p>
+<pre><code class="language-js">sel('#block').push.span({
+    style: {
+        color: red,
+        border: '1px solid pink',
+        display: 'block'
+    },
+    class: ['class1', 'class2'],
+}); //имя тэга как свойство
+
+//эквивалент кода выше
+sel('#block').push('span', {
+    style: {
+        color: red,
+        border: '1px solid pink',
+        display: 'block'
+    },
+    class: ['class1', 'class2'],
+}); //имя тэга как параметр функции</code></pre>
+<p><em>Для передачи имени свойства в параметр функции используется объект Proxy. Поэтому, когда вы вызываете свойство push, имя свойства передаётся в первый параметр функции push автоматически.</em></p>
+<h3>.insert.before</h3>
+<pre><code class="language-js">element.insert.before( (tag:str | node:HTMLElement) [, config] ) : HTMLElement</code></pre>
+<p>Вставляет элемент перед текущим и возвращает его. </p>
+<p>Первым параметром можно передать имя тэга или элемент. Если передано имя тэга, то будет создан элемент с таким тэгом, и, при наличии аргумента config, будет выполнена его настройка. Если же первым аргументом был передан элемент страницы, то этот элемент будет оторван от старого родителя и добавлен перед текущим, также будет произведена конфигурация объекта по аргументу config.</p>
+<p>Пример:</p>
+<pre><code class="language-js">sel('#block').insert.before(sel('#blockTwo'));
+sel('#block').prev() == sel('#blockTwo'); //true</code></pre>
+<pre><code class="language-js">sel('#block').insert.before('div', {
+    tC: 'text content',
+    className: 'class1 class2',
+});
+
+sel('#block').prev().className == 'class1 class2'; //true</code></pre>
+<p>Эквивалент на нативном js:</p>
+<pre><code class="language-js">let block = document.querySelector('#block');
+block.parentElement
+    .insertBefore(document.querySelector('#blockTwo'), block);
+block.previousElementSibling == document.querySelector('#blockTwo'); //true</code></pre>
+<pre><code class="language-js">let block = document.querySelector('#block');
+
+let div = document.createElement('div');
+div.textContent = 'text content';
+div.className = 'class1 class2';
+
+block.parentElement.insertBefore(div, block);
+
+block.previousElementSibling.className == 'class1 class2'; //true</code></pre>
+<h3>.insert.after</h3>
+<pre><code class="language-js">element.insert.after( (tag:str | node:HTMLElement) [, config] ) : HTMLElement</code></pre>
+<p>Вставляет элемент после текущего и возвращает его. </p>
+<p>Первым параметром можно передать имя тэга или элемент. Если передано имя тэга, то будет создан элемент с таким тэгом, и, при наличии аргумента config, будет выполнена его настройка. Если же первым аргументом был передан элемент страницы, то этот элемент будет оторван от старого родителя и добавлен перед текущим, также будет произведена конфигурация объекта по аргументу config.</p>
+<p>Пример:</p>
+<pre><code class="language-js">sel('#block').insert.after(sel('#blockTwo'));
+sel('#block').next() == sel('#blockTwo'); //true</code></pre>
+<pre><code class="language-js">sel('#block').insert.after('div', {
+    tC: 'text content',
+    className: 'class1 class2',
+});
+
+sel('#block').next().className == 'class1 class2'; //true</code></pre>
+<p>Эквивалент на нативном js:</p>
+<pre><code class="language-js">let block = document.querySelector('#block');
+block.parentElement
+    .insertBefore(document.querySelector('#blockTwo'), block.nextElementSibling);
+block.nextElementSibling == document.querySelector('#blockTwo'); //true</code></pre>
+<pre><code class="language-js">let block = document.querySelector('#block');
+
+let div = document.createElement('div');
+div.textContent = 'text content';
+div.className = 'class1 class2';
+
+block.parentElement.insertBefore(div, block.nextElementSibling);
+
+block.nextElementSibling.className == 'class1 class2'; //true</code></pre>
+<h3>.clone</h3>
+<pre><code class="language-js">element.clone( [ deepCloning:bool ]=true ) : HTMLElement</code></pre>
+<p>Создаёт копию элемента и возвращает её. Параметр deepCloning является не обязательным. Если deepCloning == true, то будет скопирован сам элемент в глубоком режиме (HTMLElement.cloneNode(true)) и все пользовательские js свойства. Иначе Будет создана глубокая копия без копирования пользовательских свойств и методов объекта.</p>
+<p>Пример:</p>
+<pre><code class="language-js">const blockClone = sel('#block').clone().config({
+    tC: 'new text content',
+});
+blockClone.textContent == sel('#block').textContent; //false</code></pre>
+<p>Эквивалент на нативном js:</p>
+<pre><code class="language-js">const block = document.querySelector('#block');
+const blockClone = block.cloneNode();
+//creon is also clone custom props, e.g. typeof objects, making full copy of them.
+blockClone.textContent = 'new text content';
+blockClone.textContent == block.textContent; //false</code></pre>
+<h3>range</h3>
+<pre><code class="language-js">range( end:number ) : array</code></pre>
+<pre><code class="language-js">range( start:number, end:number ) : array</code></pre>
+<pre><code class="language-js">range( start:number, end:number, step:number ) : array</code></pre>
+<p>Функция, которая создаёт перебираемый объект как range в python. Эта функция создана для использования с циклом for of.</p>
+<p>Пример:</p>
+<pre><code class="language-js">for (let i of range(5))
+    console.log(i); //0,1,2,3,4
+
+for (let i of range(-1, 4))
+    console.log(i); //-1,0,1,2,3
+
+for (let i of range(-1, 4, 2))
+    console.log(i); //-1,1,3
+
+Array.isArray(range(3)); //true
+range(3).forEach(i =&gt; console.log(i));</code></pre>
+<h3>keycode</h3>
+<p>Объект keycode хранит в себе номера клавиш и создан чтобы облегчить взаимодействие с событиями клаиватуры.</p>
+<p>Пример:</p>
+<pre><code class="language-js">elem.on('keydown', e =&gt; {
+    if (e.keyCode == keycode.enter) 
+        console.log('GREAT! Pressed &lt;Enter&gt;');
+    else if (e.keyCode == keycode.page.up) 
+        console.log('ERROR! Expected &lt;Enter&gt; but pressed &lt;Page Up&gt;');
+});</code></pre>
+<h3>Расширение и дополнение библиотеки (плагины)</h3>
+<p>Есть три варианта расширения библиотеки:</p>
+<ol>
+<li>Методы для каждого элемента;</li>
+<li>Автообработчики событий;</li>
+<li>Добавление режимов бэкапирования.</li>
+</ol>
+<p>Все эти варианты могут быть реализваны в плагине.</p>
+<p>Чтобы добавить метод есть два варианта: </p>
+<ol>
+<li>creon.methods.push(function(element)); - добавить функцию, которая на вход получит элемент и уже внутри функции к элементу добавить метод, присвоив анонимную функцию в свойство;</li>
+<li>creon.methods.push(object) - добавить объект, который содержит методы.</li>
+</ol>
+<p>Пример добавления собственного метода:</p>
+<pre><code class="language-js">//вариант с функцией
+typeof cre('div').sayHi; //undefined
+creon.methods.push(
+    elem =&gt; {
+        //here can be any functionality relative to element
+        elem.sayHi = function() { console.log('Hi, my tag name is ' + this.tagName); }
+    });
+typeof cre('div').sayHi; //function</code></pre>
+<pre><code class="language-js">//вариант с объектом
+typeof cre('div').sayHi; //undefined
+//objects are only define methods and props of element
+creon.methods.push({
+    sayHi() {
+        console.log('Hi, my tag name is ' + this.tagName);
+    }
+});
+typeof cre('div').sayHi; //function
+cre.div().sayHi(); //Hi, my tag name is DIV</code></pre>
+<p>Чтобы добавить автообработчики событий - нужно добавить метод объекту creon.onspecial.</p>
+<p>Пример:</p>
+<pre><code class="language-js">let block = cre.div();
+block.events; //{}
+creon.onspecial.mySpecialEvent = function (onmouseenter, onclick, onblur, mode = 'tag') {
+    let elem = this;
+    let backup;
+    elem.on('mouseenter', e =&gt; {
+        backup = elem.backup(mode);
+        onmouseenter(e);
+    }).on('click', e =&gt; {
+        console.log('click for:' + e.target + ';');
+        onclick(e);
+    }).on('blur', e =&gt; {
+        elem.config(backup);
+        onblur(e);
+    });
+};
+
+block.on.mySpecialEvent(
+    e =&gt; console.log('from mouse enter: ' + (e.target.color = 'red')),
+    e =&gt; console.log('from click'),
+    e =&gt; console.log('from blur')
+);
+
+block.events; //{ mouseenter: [...], click: [...], blur: [...] }
+
+block.style.color; //''
+block.dispatchEvent(new Event('mouseenter')); //from mouse enter: red
+block.style.color; //'red'
+block.dispatchEvent(new Event('click')); //click for: ...; from click
+block.style.color; //'red'
+block.dispatchEvent(new Event('blur')); //from blur
+block.style.color; //''</code></pre>
+<p>Чтобы добавить новый режим бэкапирования надо добавить свойство в объект creon.backup. Значением этого свойства должнен быть массив строк (каждая строка - название свойства элемента).</p>
+<p>Пример:</p>
+<pre><code class="language-js">let block = cre('div');
+block.myProp = 'myValue';
+
+block.backup('myMode'); // { myMode: undefined }
+
+creon.backup.myMode = ['tagName', 'attributes', 'myProp'];
+
+block.backup('myMode'); // { tagName: 'DIV', attributes: {}, myProp: 'myValue' }</code></pre>
+<h2>Готовые плагины</h2>
+<h3>lettering</h3>
+<pre><code class="language-js">element.lettering() : HTMLCollection</code></pre>
+<p>Функция берёт текстовое содержимое элемента, разбивает его на буквы. Потом каждую букву оборачивает в тэг span, после чего меняет innerHTML элемента на новый. Возвращает новых детей блока (this.children);</p>    </div>
+</main><script src="./js/prism.js"></script>
+<script src="./js/creon.js"></script>
+<script src="./js/index.js"></script>
+
+</body>
+
+</html>

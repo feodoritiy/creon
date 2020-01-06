@@ -32,39 +32,88 @@ Array.isEquivalent = function (a, b) {
     return true;
 };
 
-let block = sel('#blockId');
-let blockParent = sel('#blockParentId');
-let blockTwo = sel('#blockTwoId');
+let wrapper;
+let block;
+let blockParent;
+let blockTwo;
 
-let backups = [block.backup('tagFull'), blockParent.backup('tagFull'), blockTwo.backup('tagFull')];
+refresh();
 
 function refresh() {
-    [
-        block = sel('#blockId'),
-        blockParent = sel('#blockParentId'),
-        blockTwo = sel('#blockTwoId'),
-    ].forEach((el, i) => {
-        const attrs = Array.from(el.attributes).map(el => el.nodeName);
-        attrs.forEach(attr => el.removeAttribute(attr));
-        el.config(backups[i]);
-    });
+    wrapper = cre('div').class('wrapper');
+    block = wrapper.push('div', { id: 'blockId' });
+    blockParent = wrapper.push('div', { id: 'blockParentId' });
+    blockTwo = wrapper.push('div', { id: 'blockTwoId' });
 }
 
 describe('Creon Tests', () => {
-    blockParent.push('div', 10);
+    for (let i of range(10)) blockParent.push('div');
 
     const tests = {
-        '.style.few': {
-            mode: 'equal',
-            'border, width, height': [
-                sel('#blockId').style.few({
-                    border: '1px solid black',
-                    width: '5em',
-                    height: '5em'
-                }).style.cssText,
-                'border: 1px solid black; width: 5em; height: 5em;',
-                'equal'
+        'frame function': {
+            'correct copy objects from creon.frame (insert, events)': [
+                function () {
+                    refresh();
+                    sel(block);
+                    return !(
+                        block.events == creon.frame.events ||
+                        block.insert == creon.frame.insert
+                    );
+                }(), true
+            ]
+        },
+        'create': {
+            'simple': [
+                function () {
+                    return document.createElement('div').toString();
+                }(), cre('div').toString()
             ],
+            'with config': [
+                function () {
+                    const elem = create('div', {
+                        textContent: 'feodoritiy',
+                        style: {
+                            border: '1px solid red'
+                        },
+                        class: ['class1', 'class2']
+                    });
+
+                    const expected = [
+                        'DIV',
+                        'feodoritiy',
+                        'border: 1px solid red;',
+                        'class1 class2'
+                    ], result = [
+                        elem.tagName,
+                        elem.textContent,
+                        elem.style.cssText,
+                        elem.className
+                    ];
+                    return Array.isEquivalent(expected, result);
+                }(), true
+            ],
+            'autocomplete': [
+                function () {
+                    const block = create.div({
+                        tC: 'text content'
+                    });
+                    return block.textContent;
+                }(), 'text content'
+            ]
+        },
+        'plugins': {
+            '.style.few': {
+                mode: 'equal',
+                'border, width, height': [
+                    wrapper.sel('#blockId').style.few({
+                        border: '1px solid black',
+                        width: '5em',
+                        height: '5em'
+                    }).style.cssText,
+                    'border: 1px solid black; width: 5em; height: 5em;',
+                    'equal'
+                ],
+            },
         },
         '.to': {
             '#block.to(#blockParent)': [
@@ -75,7 +124,6 @@ describe('Creon Tests', () => {
 
                     block = block.clone();
                     let blockParentLoc = document.createElement('div');
-                    sel(blockParentLoc).push('div', 10);
                     blockParentLoc.append(block);
 
                     return blockParent.children.length ==
@@ -210,8 +258,9 @@ describe('Creon Tests', () => {
             'few': [
                 function () {
                     refresh();
-                    return block.parent(3);
-                }(), block.parentElement.parentElement.parentElement
+                    let target = block.push.div().push.div().push.div();
+                    return target.parent(3);
+                }(), block
             ],
         },
         '.next': {
@@ -224,9 +273,18 @@ describe('Creon Tests', () => {
             'few': [
                 function () {
                     refresh();
-                    blockParent.push('div', 10);
+                    for (let i of range(10)) blockParent.push('div');
                     return block.next(3);
                 }(), block.nextElementSibling.nextElementSibling.nextElementSibling
+            ],
+            'by selector': [
+                function () {
+                    refresh();
+                    blockParent.append(block);
+                    for (let i of range(5)) blockParent.push('div');
+                    blockParent.append(cre('span', { id: 'target' }));
+                    return block.next('span#target');
+                }(), block.parentElement.querySelector('span#target')
             ],
         },
         '.prev': {
@@ -238,9 +296,19 @@ describe('Creon Tests', () => {
             ],
             'few': [
                 function () {
-                    refresh();
+                    range(3).forEach(i => wrapper.push.li());
+                    wrapper.append(block);
                     return block.prev(3);
                 }(), block.previousElementSibling.previousElementSibling.previousElementSibling
+            ],
+            'by selector': [
+                function () {
+                    refresh();
+                    blockParent.append(cre('span', { id: 'target' }));
+                    for (let i of range(5)) blockParent.push('div');
+                    blockParent.append(block);
+                    return block.prev('span#target');
+                }(), block.parentElement.querySelector('span#target')
             ],
         },
         '.firstchild': {
@@ -286,7 +354,7 @@ describe('Creon Tests', () => {
             'few': [
                 function () {
                     refresh();
-                    block.push('u', 3);
+                    for (let i of range(3)) block.push('u');
                     return block.lastchild().tagName == 'U' &&
                         block.lastchild().prev().tagName == 'U' &&
                         block.lastchild().prev(2).tagName == 'U';
@@ -297,6 +365,30 @@ describe('Creon Tests', () => {
                     block.push.input();
                     return block.lastchild().tagName;
                 }(), 'INPUT'
+            ],
+            'with config': [
+                function () {
+                    const elem = create('div').push('span', {
+                        textContent: 'feodoritiy',
+                        style: {
+                            border: '1px solid red'
+                        },
+                        class: ['class1', 'class2']
+                    });
+
+                    const expected = [
+                        'SPAN',
+                        'feodoritiy',
+                        'border: 1px solid red;',
+                        'class1 class2'
+                    ], result = [
+                        elem.tagName,
+                        elem.textContent,
+                        elem.style.cssText,
+                        elem.className
+                    ];
+                    return Array.isEquivalent(expected, result);
+                }(), true
             ]
         },
         '.insert': {
@@ -321,6 +413,58 @@ describe('Creon Tests', () => {
                         block.insert.before.input().class('autocomplete');
                         return block.prev().tagName == 'INPUT' && block.prev().hasclass('autocomplete');
                     }(), true
+                ],
+                'with config': [
+                    function () {
+                        const elem = create('div').push('div').insert.before('span', {
+                            textContent: 'feodoritiy',
+                            style: {
+                                border: '1px solid red'
+                            },
+                            class: ['class1', 'class2']
+                        });
+
+                        const expected = [
+                            'SPAN',
+                            'feodoritiy',
+                            'border: 1px solid red;',
+                            'class1 class2',
+                            'DIV'
+                        ], result = [
+                            elem.tagName,
+                            elem.textContent,
+                            elem.style.cssText,
+                            elem.className,
+                            elem.next().tagName
+                        ];
+                        return Array.isEquivalent(expected, result);
+                    }(), true
+                ],
+                'select and config': [
+                    function () {
+                        const elem = create('div').push('div').insert.before(cre('span'), {
+                            textContent: 'feodoritiy',
+                            style: {
+                                border: '1px solid red'
+                            },
+                            class: ['class1', 'class2']
+                        });
+
+                        const expected = [
+                            'SPAN',
+                            'feodoritiy',
+                            'border: 1px solid red;',
+                            'class1 class2',
+                            'DIV'
+                        ], result = [
+                            elem.tagName,
+                            elem.textContent,
+                            elem.style.cssText,
+                            elem.className,
+                            elem.next().tagName
+                        ];
+                        return Array.isEquivalent(expected, result);
+                    }(), true
                 ]
             },
             '.after': {
@@ -344,12 +488,38 @@ describe('Creon Tests', () => {
                         block.insert.after.input().class('autocomplete');
                         return block.next().tagName == 'INPUT' && block.next().hasclass('autocomplete');
                     }(), true
-                ]
+                ],
+                'with config': [
+                    function () {
+                        const elem = create('div').push('div').insert.after('span', {
+                            textContent: 'feodoritiy',
+                            style: {
+                                border: '1px solid red'
+                            },
+                            class: ['class1', 'class2']
+                        });
+
+                        const expected = [
+                            'SPAN',
+                            'feodoritiy',
+                            'border: 1px solid red;',
+                            'class1 class2',
+                            'DIV'
+                        ], result = [
+                            elem.tagName,
+                            elem.textContent,
+                            elem.style.cssText,
+                            elem.className,
+                            elem.prev().tagName
+                        ];
+                        return Array.isEquivalent(expected, result);
+                    }(), true
+                ],
             },
         },
         '.clone': {
             'deep == true': {
-                'no args': [
+                'no args //custom props and methods': [
                     function () {
                         refresh();
                         block.myProp = 'myProp';
@@ -358,7 +528,7 @@ describe('Creon Tests', () => {
                         return clone.myProp == 'myProp' && clone.myMethod() == 'myMethod';
                     }(), true
                 ],
-                '(true)': [
+                '(true) //custom props and methods': [
                     function () {
                         refresh();
                         block.myProp = 'myProp';
@@ -369,7 +539,7 @@ describe('Creon Tests', () => {
                 ]
             },
             'deep == false': {
-                '(false)': [
+                '(false) //custom props and methods': [
                     function () {
                         refresh();
                         block.myProp = 'myProp';
@@ -396,12 +566,14 @@ describe('Creon Tests', () => {
         '.select': {
             'sel': [
                 function () {
-                    return sel('#blockId');
+                    refresh();
+                    return wrapper.sel('#blockId');
                 }(), block
             ],
             'select': [
                 function () {
-                    return select('#blockId');
+                    refresh();
+                    return wrapper.select('#blockId');
                 }(), block
             ],
         },
@@ -409,16 +581,18 @@ describe('Creon Tests', () => {
             'sela': [
                 function () {
                     refresh();
-                    let lettering = block.lastchild().sela('span > span');
-                    let qsa = block.lastchild().querySelectorAll('span > span');
+                    range(3).forEach(i => block.push.span());
+                    let lettering = block.sela('span');
+                    let qsa = block.querySelectorAll('span');
                     return Array.isEquivalent(lettering, qsa);
                 }(), true
             ],
             'selectAll': [
                 function () {
                     refresh();
-                    let lettering = block.lastchild().selectAll('span > span');
-                    let qsa = block.lastchild().querySelectorAll('span > span');
+                    range(3).forEach(i => block.push.span());
+                    let lettering = block.selectAll('span');
+                    let qsa = block.querySelectorAll('span');
                     return Array.isEquivalent(lettering, qsa);
                 }(), true
             ],
@@ -440,13 +614,39 @@ describe('Creon Tests', () => {
                     return 'OK';
                 }(), block.isOnAutocomplete
             ],
-            'eventsStore': [
-                function () {
-                    refresh();
-                    block.on('click', e => block.isEventStore = 'eventstore');
-                    return block.events.click[2].toString();
-                }(), "e => block.isEventStore = 'eventstore'"
-            ],
+            '.events': {
+                'add': [
+                    function () {
+                        refresh();
+                        block.on('click', e => block.isEventStore = 'eventstore');
+                        return block.events.click[0].toString();
+                    }(), "e => block.isEventStore = 'eventstore'"
+                ],
+                'remove signle event': [
+                    function () {
+                        refresh();
+                        block.on('click', e => block.isEventStore = 'eventstore');
+                        block.events.click[0].remove();
+                        return block.events.click[0];
+                    }(), undefined
+                ],
+                'remove event type': [
+                    function () {
+                        refresh();
+                        block.on('click', e => block.isEventStore = 'eventstore');
+                        block.events.click.remove();
+                        return block.events.click;
+                    }(), undefined
+                ],
+                'remove all events': [
+                    function () {
+                        refresh();
+                        block.on('click', e => block.isEventStore = 'eventstore');
+                        block.events.remove();
+                        return 0;
+                    }(), Object.keys(block.events)
+                ]
+            },
             'special events': {
                 'hover': {
                     '() //tag': [
@@ -553,38 +753,6 @@ describe('Creon Tests', () => {
                     return Array.isEquivalent(expected, result);
                 }(), true
             ],
-            'creon.run with creon methods (class: creon.run(class1, class2))': [
-                function () {
-                    refresh();
-                    block.config({
-                        htmlto: creon.run('<em>new inner html</em>'),
-                        on: creon.run('click', () => 'on from config >> creon methods'),
-                        attr: creon.run('attr-from-config-creon-methods', 'hohoho'),
-                        class: creon.run('conf-class1', 'conf-class2', 'conf-class3'),
-                        myObject: creon.sacred({
-                            myProp1: 'myVal1',
-                        }),
-                    });
-
-                    let expected = [
-                        '<em>new inner html</em>',
-                        "() => 'on from config >> creon methods'",
-                        'hohoho',
-                        true,
-                        'myVal1'
-                    ], result = [
-                        block.innerHTML,
-                        Array.from(block.events.click).pop(),
-                        block.attr('attr-from-config-creon-methods'),
-                        block.hasclass('conf-class1', 'conf-class2', 'conf-class3'),
-                        block.myObject.myProp1
-                    ];
-
-                    console.log();
-
-                    return Array.isEquivalent(expected, result);
-                }(), true
-            ],
             'is creon method and value is arguments array (class: [class1, class2])': [
                 function () {
                     refresh();
@@ -674,10 +842,62 @@ describe('Creon Tests', () => {
                     ];
                     return Array.isEquivalent(expected, result);
                 }(), true
-            ]
+            ],
+            'on': {
+                'single': [
+                    function () {
+                        refresh();
+                        block.config({
+                            on: ['mouseenter', e => e.target.textContent = 'mouseenter']
+                        });
+                        return "e => e.target.textContent = 'mouseenter'";
+                    }(), block.events.mouseenter[0].toString()
+                ],
+                'few': [
+                    function () {
+                        refresh();
+                        block.config({
+                            on: [
+                                ['mouseenter', e => e.target.textContent = 'mouseenter'],
+                                ['click', e => e.target.textContent = 'click'],
+                            ]
+                        });
+                        const expected = [
+                            "e => e.target.textContent = 'mouseenter'",
+                            "e => e.target.textContent = 'click'"
+                        ], result = [
+                            block.events.mouseenter[0].toString(),
+                            block.events.click[0].toString(),
+                        ];
+                        return Array.isEquivalent(expected, result);
+                    }(), true
+                ]
+            }
         },
         '.backup': {
-            'tagFull': [
+            'tag (classes, styles)': [
+                function () {
+                    refresh();
+                    block.config({
+                        style: {
+                            border: '1px solid red',
+                            color: 'gray'
+                        },
+                        class: ['hello', 'few-hello1', 'few-hello2', 'few-hello3', 'conf-class1', 'conf-class2', 'conf-class3'],
+                    });
+                    let backup = block.backup('tag');
+                    const expected = [
+                        'border: 1px solid red; color: gray;',
+                        'hello few-hello1 few-hello2 few-hello3 conf-class1 conf-class2 conf-class3'
+                    ], result = [
+                        backup.style.cssText,
+                        backup.className
+                    ];
+                    console.log(backup);
+                    return Array.isEquivalent(expected, result);
+                }(), true
+            ],
+            'tagFull (all attributes)': [
                 function () {
                     refresh();
                     block.config({

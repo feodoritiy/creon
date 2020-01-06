@@ -26,11 +26,20 @@
 
 <body>
 
-    <div id="blockId"></div>
-    <div id="blockParentId"></div>
-    <div id="blockTwoId"></div>
+    <nav id="testSearch">
+        <form>
+            <input type="text" name="prop" class="search" placeholder="test search regex">
+            <button class="search-button">Найти</button>
+            <button class="result-prev">&lt;</button>
+            <pre class="result-current" style="margin: 0.25em;">0</pre>
+            <pre style="margin: 0.25em 0;">/</pre>
+            <pre class="result-total" style="margin: 0.25em;">0</pre>
+            <button class="result-next">&gt;</button>
+        </form>
+    </nav>
 
     <script src="../src/creon.js"></script>
+    <script src="../src/plugins/lettering.js"></script>
     <script src="./test.js"></script>
 
     <div id="mocha"></div>
@@ -39,6 +48,149 @@
     <script>
         mocha.run();
         setTimeout(() => console.log(window.backup), 1000);
+    </script>
+
+    <script>
+        const searchNavBar = sel('nav#testSearch').config({
+            style: {
+                position: 'fixed',
+                bottom: 0,
+                left: 0,
+                opacity: 0.75,
+                padding: '0.5em',
+                justifyContent: 'center',
+                display: 'flex',
+                flexDirection: 'row',
+                width: '100%',
+                height: 'fit-content',
+                background: 'linear-gradient(to top, #aaa, #00000000)',
+                zIndex: 10
+            }
+        });
+
+        const searchForm = searchNavBar.firstchild().config(searchNavBar.backup('attributes'));
+        searchForm.config({
+            style: {
+                opacity: 1,
+                background: 'transparent',
+                position: 'static',
+            },
+            on: ['submit', e => {
+                e.preventDefault();
+            }]
+        });
+
+        const searchField = searchNavBar.sel('input.search');
+        searchField.config({
+            on: [
+                ['focusin', e => e.target.value = '']
+            ],
+            style: {
+                fontFamily: 'monospace'
+            }
+        });
+        searchField.focus();
+
+        const searchButton = searchForm.sel('.search-button');
+        searchButton.config({
+            on: [
+                ['click', e => doSearch()]
+            ]
+        });
+
+        const searchResult = {
+            curr: 0,
+            fields: {
+                curr: searchNavBar.sel('.result-current'),
+                total: searchNavBar.sel('.result-total'),
+            },
+            controllers: {
+                prev: searchNavBar.sel('.result-prev'),
+                next: searchNavBar.sel('.result-next'),
+            },
+            array: [],
+            refresh() {
+                this.array = [];
+                this.curr = 0;
+            },
+            scrollTo(i) {
+                this.curr = i;
+                this.fields.curr.textContent = i + 1;
+                const target = this.array[i];
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                target.style.transition = '0.25s';
+                target.style.background = '#00ff0055';
+                target.offsetHeight;
+                target.on('transitionend', e => {
+                    target.style.background = '';
+                    target.events.transitionend.remove();
+                    target.on('transitionend', e => {
+                        target.style.transition = '';
+                        target.events.transitionend.remove();
+                    })
+                })
+            },
+            update() {
+                this.fields.total.textContent = this.array.length;
+                this.fields.curr.textContent = this.curr + 1;
+            },
+            next() {
+                if (this.curr < this.array.length - 1) {
+                    this.curr++;
+                    this.scrollTo(this.curr);
+                } else return null;
+            },
+            prev() {
+                if (this.curr > 0) {
+                    this.curr--;
+                    this.scrollTo(this.curr);
+                } else return null;
+            },
+            init() {
+                this.fields.curr.config({
+                    on: [
+                        ['click', e => searchResult.scrollTo(searchResult.curr)]
+                    ],
+                    style: {
+                        cursor: 'pointer'
+                    }
+                })
+                this.controllers.prev.on.click(e => {
+                    searchResult.prev();
+                });
+                this.controllers.next.on.click(e => {
+                    searchResult.next();
+                });
+            }
+        };
+        searchResult.init();
+
+        function doSearch() {
+            searchResult.refresh();
+
+            const searchStringSplit = searchField.value.split('/');
+            const regexFlags = searchStringSplit.length > 1 ? searchStringSplit.pop() : undefined;
+            const regexText = searchStringSplit.join('/');
+            const searchRegex = new RegExp(regexText, regexFlags);
+            const descriptions = sela('h1');
+            for (let descr of descriptions) {
+                if (descr.textContent.match(searchRegex)) {
+                    searchResult.array.push(descr);
+                }
+            }
+            const tests = sela('h2');
+            for (let test of tests) {
+                if (test.textContent.match(searchRegex)) {
+                    searchResult.array.push(test);
+                }
+            }
+
+            searchResult.array.sort((a, b) => a.offsetTop - b.offsetTop);
+
+            searchResult.update();
+            if (searchResult.array.length > 0) searchResult.scrollTo(0);
+            else searchResult.fields.curr.textContent = 0;
+        }
     </script>
 </body>
 

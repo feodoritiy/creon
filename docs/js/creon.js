@@ -1,20 +1,3 @@
-/*
-
---- CREON ---
-
-page manipulation library
-
-github repository: https://github.com/feodoritiy/creon
-
-created by feodoritiy
-day: 06
-mounth: 02
-year: 2020
-
-version 1.0
-
-*/
-
 /**
  * select element from page
  * @param {string} selector 

@@ -24,3 +24,13 @@ menuButton.on('clickToggle',
         for (let pre of preElemenets) pre.style.overflow = 'hidden';
     },
 );
+
+window.onload = window.onresize = () => {
+    if (screen.width <= 600) {
+
+    } else {
+        if (asideFloat.style.width === '0px' || asideFloat.style.width === '0') {
+            menuButton.dispatchEvent(new Event('click'));
+        }
+    }
+};
